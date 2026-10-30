@@ -1,0 +1,3205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RockWave — O som ainda não morreu.</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .hero {
+    position: relative;
+    min-height: 100vh;
+    padding: 60px 20px 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+.hero > .logo,
+.hero > .fallback-logo,
+.hero > .tagline,
+.hero > .menu {
+    position: relative;
+    z-index: 1;
+}
+
+.glow {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: #b00000;
+            filter: blur(180px);
+            opacity: 0.12;
+            border-radius: 50%;
+        }
+
+        .logo {
+            position: relative;
+            width: min(430px, 85vw);
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(255,0,0,0.35));
+        }
+
+        /* =========================
+           ROCKWAVE VISUAL POLISH
+        ========================== */
+        body {
+            background-color: #080808;
+            background-image:
+                repeating-radial-gradient(circle at 20% 30%, rgba(255,255,255,.035) 0 1px, transparent 1px 5px),
+                repeating-linear-gradient(7deg, rgba(255,255,255,.028) 0 1px, transparent 1px 9px),
+                repeating-linear-gradient(91deg, rgba(0,0,0,.35) 0 2px, transparent 2px 13px),
+                radial-gradient(circle at 18% 22%, rgba(150,0,0,.22), transparent 18%),
+                linear-gradient(135deg,#171717,#070707 38%,#121212 62%,#040404);
+            background-attachment: fixed;
+            background-size: 180px 180px,260px 260px,310px 310px,auto,100% 100%;
+        }
+        .hero::after {
+            content: "ROCKWAVE • SIGNAL ONLINE";
+            position: absolute; bottom:24px; left:50%; transform:translateX(-50%);
+            color:#4f4f4f; font:900 10px/1 Arial,Helvetica,sans-serif;
+            letter-spacing:4px; white-space:nowrap;
+        }
+        .tagline {
+            position:relative; padding:10px 18px; border-top:1px solid #280000;
+            border-bottom:1px solid #280000; text-shadow:0 0 18px rgba(180,0,0,.25);
+        }
+        .menu { perspective:900px; }
+        .menu button { position:relative; overflow:hidden; border-radius:3px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.015); }
+        .menu button::after {
+            content:""; position:absolute; left:-110%; top:0; width:70%; height:100%;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);
+            transform:skewX(-20deg); transition:left .45s ease;
+        }
+        .menu button:hover::after { left:130%; }
+        .menu button span { filter:drop-shadow(0 0 8px rgba(255,0,0,.18)); }
+        .section-title { text-shadow:0 0 30px rgba(180,0,0,.12); }
+        .back { border-left:3px solid #a00000; transition:.2s; }
+        .back:hover { transform:translateX(-3px); }
+        .gallery-card,.achievement,.style-card,.curiosity-box,.radio-box,.decade-display,.quiz-question { border-radius:3px; }
+
+        .fallback-logo {
+            font-size: clamp(60px, 12vw, 120px);
+            font-weight: 900;
+            letter-spacing: -8px;
+            transform: skew(-8deg);
+            text-shadow:
+                5px 5px 0 #850000,
+                10px 10px 0 #300000;
+        }
+
+        .tagline {
+            position: relative;
+            color: #aaa;
+            font-size: 18px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 55px;
+        }
+
+        .menu {
+            position: relative;
+            width: min(1100px, 94vw);
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .menu button {
+            min-height: 110px;
+            background: #0d0d0d;
+            color: white;
+            border: 1px solid #333;
+            border-left: 5px solid #a00000;
+            font-size: 17px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: left;
+            padding: 25px;
+        }
+
+        .menu button:hover {
+            background: #170000;
+            border-color: #b00000;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(180,0,0,0.2);
+        }
+
+        .menu button span {
+            display: block;
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        section {
+            min-height: 100vh;
+            padding: 100px 7%;
+            display: none;
+        }
+
+        section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: clamp(38px, 7vw, 80px);
+            text-transform: uppercase;
+            font-weight: 900;
+            margin-bottom: 15px;
+            letter-spacing: -3px;
+        }
+
+        .section-subtitle {
+            color: #888;
+            margin-bottom: 45px;
+            font-size: 17px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 50px;
+            padding: 12px 20px;
+            background: #111;
+            border: 1px solid #333;
+            color: white;
+            cursor: pointer;
+        }
+
+        .back:hover {
+            background: #220000;
+        }
+
+        .styles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 15px;
+        }
+
+        .style-card {
+            background: #0d0d0d;
+            border: 1px solid #222;
+            padding: 25px;
+            min-height: 150px;
+            transition: 0.2s;
+        }
+
+        .style-card:hover {
+            border-color: #a00000;
+            transform: translateY(-4px);
+        }
+
+        .style-card h3 {
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .style-card p {
+            color: #888;
+            line-height: 1.5;
+        }
+
+        .radio-box {
+            max-width: 900px;
+            margin: auto;
+            background: #090909;
+            border: 1px solid #292929;
+            padding: 25px;
+            position: relative;
+            isolation: isolate;
+        }
+
+        .radio-screen {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            background: #000 !important;
+            margin-bottom: 20px;
+            overflow: hidden;
+            isolation: isolate;
+            contain: paint;
+        }
+
+        .radio-screen iframe {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            opacity: 1 !important;
+            filter: none !important;
+            mix-blend-mode: normal !important;
+            background: #000 !important;
+            position: relative;
+            z-index: 2;
+        }
+
+        #radio { position:relative; z-index:1; isolation:isolate; background:#050505 !important; background-image:none !important; background-attachment:initial !important; }
+        #radio::before { content:""; position:absolute; inset:0; z-index:0; background:#050505; pointer-events:none; }
+        #radio > * { position:relative; z-index:1; }
+        #radio .radio-box { background:#090909 !important; isolation:isolate; }
+        #radio .radio-screen { background:#000 !important; isolation:isolate; overflow:hidden; }
+        #radio .radio-screen iframe { background:#000 !important; opacity:1 !important; mix-blend-mode:normal !important; filter:none !important; }
+        #radio .radio-box,
+        #radio .radio-screen {
+            position: relative;
+            z-index: 2;
+            background: #000 !important;
+        }
+        #radio .radio-screen iframe {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            display: block;
+        }
+
+        .radio-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .radio-title {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .radio-status {
+            color: #888;
+            margin-top: 6px;
+        }
+
+        .radio-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+
+        .radio-controls button {
+            background: #111;
+            color: white;
+            border: 1px solid #444;
+            padding: 13px 18px;
+            cursor: pointer;
+        }
+
+        .radio-controls button:hover {
+            background: #300000;
+            border-color: #a00000;
+        }
+
+        .extras {
+            max-width: 800px;
+        }
+
+        .secret {
+            margin-top: 40px;
+            padding: 30px;
+            background: #090909;
+            border: 1px dashed #333;
+            color: #777;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #555;
+            border-top: 1px solid #151515;
+        }
+
+
+        /* EASTER EGG: janela centralizada */
+        #easterMessage {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(7px);
+            text-align: center;
+        }
+
+        #easterMessage.show {
+            display: flex;
+            animation: easterShake .12s infinite;
+        }
+
+        @keyframes easterShake {
+            0%   { transform: translate(0, 0) rotate(0deg); }
+            25%  { transform: translate(-5px, 3px) rotate(-0.5deg); }
+            50%  { transform: translate(5px, -3px) rotate(0.5deg); }
+            75%  { transform: translate(-3px, -4px) rotate(-0.3deg); }
+            100% { transform: translate(3px, 4px) rotate(0.3deg); }
+        }
+
+        .easter-card {
+            width: min(560px, 100%);
+            padding: 42px 28px;
+            background: #090909;
+            border: 1px solid #b00000;
+            box-shadow: 0 0 50px rgba(190, 0, 0, 0.3);
+        }
+
+        .easter-card h2 {
+            color: #ff3030;
+            font-size: clamp(28px, 6vw, 48px);
+            margin-bottom: 14px;
+        }
+
+        .easter-card p {
+            color: #ddd;
+            line-height: 1.6;
+        }
+
+        .easter-media:empty { display: none; }
+        .easter-media iframe {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            margin-top: 18px;
+            border: 0;
+        }
+        .easter-media.audio-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+        }
+        .easter-media.audio-only iframe {
+            width: 1px;
+            height: 1px;
+            aspect-ratio: auto;
+            margin: 0;
+        }
+
+        .easter-hint {
+            margin-top: 24px;
+            color: #777 !important;
+            font-size: 12px;
+            letter-spacing: 2px;
+        }
+
+
+        #quizBox { max-width: 900px; margin: 0 auto 70px; }
+        .quiz-question { display: none; background:#090909; border:1px solid #292929; padding:35px; }
+        .quiz-question.active { display:block; }
+        .quiz-question h2 { font-size:clamp(24px,4vw,38px); margin-bottom:25px; }
+        .quiz-options { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        .quiz-options button, .quiz-restart { background:#111; color:#fff; border:1px solid #444; padding:18px; text-align:left; cursor:pointer; font-weight:bold; font-size:15px; transition:.2s; }
+        .quiz-options button:hover, .quiz-restart:hover { background:#300000; border-color:#b00000; transform:translateY(-2px); }
+        #quizProgress { color:#888; margin-bottom:15px; letter-spacing:2px; font-size:12px; }
+        .quiz-result { display:none; text-align:center; padding:50px 25px; background:#090909; border:1px solid #b00000; box-shadow:0 0 40px rgba(180,0,0,.18); }
+        .quiz-result.show { display:block; }
+        .result-kicker { color:#888; letter-spacing:4px; font-size:12px; margin-bottom:15px; }
+        #resultGenre { font-size:clamp(40px,8vw,80px); font-weight:900; margin-bottom:18px; }
+        #resultText { color:#aaa; max-width:650px; margin:0 auto 25px; line-height:1.6; }
+        .quiz-restart { text-align:center; display:inline-block; }
+        .small-title { font-size:clamp(28px,5vw,50px); margin-top:60px; }
+        @media (max-width:650px){ .quiz-options{grid-template-columns:1fr;} .quiz-question{padding:25px;} }
+
+
+        .time-machine {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .decade-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .decade-buttons button {
+            background: #111;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 16px 10px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .decade-buttons button:hover,
+        .decade-buttons button.selected {
+            background: #300000;
+            border-color: #b00000;
+            transform: translateY(-2px);
+        }
+
+        .decade-display {
+            background: #090909;
+            border: 1px solid #292929;
+            padding: 40px;
+            min-height: 330px;
+            box-shadow: inset 0 0 50px rgba(120,0,0,.06);
+        }
+
+        .time-kicker {
+            color: #777;
+            font-size: 12px;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+        }
+
+        .decade-display h2 {
+            font-size: clamp(38px, 7vw, 70px);
+            margin-bottom: 20px;
+        }
+
+        .decade-display p {
+            color: #aaa;
+            line-height: 1.7;
+            margin-bottom: 22px;
+        }
+
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .time-item {
+            background: #0f0f0f;
+            border-left: 3px solid #a00000;
+            padding: 18px;
+        }
+
+        .time-item strong {
+            display: block;
+            margin-bottom: 7px;
+        }
+
+        .time-item span {
+            color: #888;
+            line-height: 1.5;
+        }
+
+        .time-note {
+            max-width: 1000px;
+            margin: 20px auto 0;
+            color: #666;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        @media (max-width:650px) {
+            .decade-display { padding: 25px; }
+        }.curiosity-box {
+            max-width:900px;
+            margin:0 auto;
+            min-height:300px;
+            background:#090909;
+            border:1px solid #292929;
+            padding:40px;
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+        }
+        .curiosity-tag { color:#b00000; font-weight:bold; letter-spacing:3px; font-size:12px; margin-bottom:15px; }
+        #curiosityText { font-size:clamp(24px,4vw,40px); line-height:1.3; }
+        .random-button {
+            margin-top:30px;
+            align-self:flex-start;
+            background:#111;
+            color:#fff;
+            border:1px solid #555;
+            padding:15px 22px;
+            cursor:pointer;
+            font-weight:bold;
+        }
+        .random-button:hover { background:#300000; border-color:#b00000; }
+
+        .achievement-grid {
+            max-width:1000px;
+            margin:0 auto;
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+            gap:15px;
+        }
+        .achievement {
+            background:#0d0d0d;
+            border:1px solid #222;
+            padding:24px;
+            min-height:160px;
+            opacity:.48;
+            transition:.2s;
+        }
+        .achievement.unlocked { opacity:1; border-color:#a00000; box-shadow:0 0 20px rgba(180,0,0,.1); }
+        .achievement h3 { margin-bottom:10px; }
+        .achievement p { color:#888; line-height:1.5; }
+        .achievement-state { margin-top:15px; color:#666; font-size:11px; letter-spacing:2px; }
+        .achievement.unlocked .achievement-state { color:#ff5555; }
+
+        .radio-live {
+            display:flex;
+            align-items:center;
+            gap:8px;
+            margin-bottom:15px;
+            color:#ff5555;
+            font-weight:bold;
+            letter-spacing:2px;
+        }
+        .live-dot { width:9px; height:9px; background:#d00000; border-radius:50%; box-shadow:0 0 12px #d00000; }
+        .radio-progress { height:5px; background:#222; margin-top:18px; overflow:hidden; }
+        #radioProgressFill { width:0; height:100%; background:#b00000; transition:width .3s; }
+        .radio-meta { color:#666; font-size:12px; margin-top:8px; }
+
+        @media(max-width:650px){ .curiosity-box{padding:25px;} }
+
+        /* =========================
+           RECURSOS ROCKWAVE — SHOW / UNDERGROUND
+        ========================== */
+        .show-mode-btn {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            z-index: 5000;
+            background: #0b0b0b;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 12px 16px;
+            cursor: pointer;
+            font-weight: 900;
+            letter-spacing: 1px;
+            box-shadow: 0 0 18px rgba(180,0,0,.18);
+        }
+        .show-mode-btn:hover { background:#300000; border-color:#b00000; }
+        body.show-mode {
+            background: radial-gradient(circle at 50% 35%, #260000 0%, #050505 45%, #000 100%);
+        }
+        body.show-mode .hero,
+        body.show-mode section:not(#radio) {
+            animation: showPulse 1.8s ease-in-out infinite alternate;
+        }
+        body.show-mode .glow {
+            opacity: .34;
+            background: #ff0000;
+            filter: blur(120px);
+            animation: showGlow 1.1s ease-in-out infinite alternate;
+        }
+        body.show-mode .menu button,
+        body.show-mode .style-card,
+        body.show-mode .achievement,
+        body.show-mode .curiosity-box,
+        body.show-mode .radio-box,
+        body.show-mode .decade-display,
+        body.show-mode .quiz-question {
+            border-color: #700000;
+            box-shadow: 0 0 24px rgba(180,0,0,.12);
+        }
+        @keyframes showPulse {
+            from { filter: brightness(.9); }
+            to { filter: brightness(1.12); }
+        }
+        @keyframes showGlow {
+            from { transform:scale(.9); opacity:.22; }
+            to { transform:scale(1.15); opacity:.42; }
+        }
+        .underground-box {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px;
+            background: #020202;
+            border: 1px solid #3d0000;
+            box-shadow: inset 0 0 70px rgba(180,0,0,.08), 0 0 35px rgba(180,0,0,.1);
+        }
+        .underground-terminal {
+            margin-top: 25px;
+            background:#000;
+            border:1px solid #252525;
+            padding:22px;
+            color:#8f8;
+            font-family:monospace;
+            line-height:1.7;
+            min-height:180px;
+        }
+        .underground-terminal .red { color:#f44; }
+        .underground-code {
+            margin-top:22px;
+            padding:18px;
+            background:#090909;
+            border:1px dashed #500;
+            color:#aaa;
+        }
+        .secret-video-grid {
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+            gap:18px;
+            margin-top:24px;
+            align-items:stretch;
+        }
+        .secret-video-card {
+            display:flex;
+            flex-direction:column;
+            min-width:0;
+            padding:16px;
+            background:#080808;
+            border:1px solid #292929;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.015);
+        }
+        .secret-video-card h2 {
+            margin-bottom:8px;
+            font-size:20px;
+            line-height:1.25;
+        }
+        .secret-video-card p {
+            margin-bottom:14px;
+            color:#808080;
+            min-height:44px;
+            line-height:1.45;
+        }
+        .secret-video-frame {
+            display:block;
+            width:100%;
+            aspect-ratio:16/9;
+            border:1px solid #3a0000;
+            background:#000;
+            box-shadow: 0 0 0 1px rgba(180,0,0,0.12);
+        }
+        .secret-video-frame.audio-only { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+        .secret-code {
+            color:#ff5555;
+            font-family:monospace;
+            font-weight:bold;
+        }
+
+    
+        /* =========================
+           GALERIA ROCKWAVE
+        ========================== */
+        .gallery-intro {
+            max-width: 900px;
+            margin: 0 auto 35px;
+            color: #aaa;
+            line-height: 1.7;
+        }
+        .gallery-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 18px;
+        }
+        .gallery-card {
+            position: relative;
+            min-height: 250px;
+            padding: 24px;
+            background: #090909;
+            border: 1px solid #252525;
+            overflow: hidden;
+            transition: .25s;
+        }
+        .gallery-card:hover {
+            transform: translateY(-6px) rotate(-.4deg);
+            border-color: #b00000;
+            box-shadow: 0 18px 40px rgba(180,0,0,.16);
+        }
+        .gallery-art {
+            height: 150px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background:
+                repeating-linear-gradient(135deg, #0b0b0b 0 8px, #111 8px 16px);
+            border: 1px solid #222;
+            position: relative;
+            overflow: hidden;
+        }
+        .gallery-art::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, rgba(180,0,0,.22), transparent 65%);
+            pointer-events: none;
+        }
+        .gallery-art strong {
+            position: relative;
+            z-index: 1;
+            font-size: clamp(26px, 5vw, 42px);
+            font-weight: 900;
+            letter-spacing: -2px;
+            transform: rotate(-4deg);
+            text-shadow: 3px 3px 0 #500000;
+        }
+        .gallery-art .mini-logo {
+            font-size: 32px;
+            letter-spacing: 2px;
+            color: #fff;
+        }
+        .gallery-card h3 {
+            margin-bottom: 8px;
+            font-size: 19px;
+        }
+        .gallery-card p {
+            color: #777;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        .gallery-label {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 2;
+            color: #777;
+            font: 700 10px monospace;
+            letter-spacing: 2px;
+        }
+        .gallery-note {
+            max-width: 1100px;
+            margin: 30px auto 0;
+            padding: 18px;
+            border-left: 3px solid #a00000;
+            background: #090909;
+            color: #666;
+            font-size: 12px;
+        }
+        @media(max-width:650px) {
+            .gallery-grid { grid-template-columns: 1fr; }
+        }
+
+        .gallery-filters{max-width:1100px;margin:0 auto 22px;display:flex;flex-wrap:wrap;gap:9px}
+        .gallery-filter{background:#0d0d0d;color:#aaa;border:1px solid #333;padding:10px 14px;cursor:pointer;font-weight:900;letter-spacing:1px;transition:.2s}
+        .gallery-filter:hover,.gallery-filter.active{color:#fff;background:#300000;border-color:#b00000}
+        .gallery-card.hidden{display:none}
+        .gallery-card h3{margin-bottom:8px}.gallery-card p{color:#888;line-height:1.5}
+        @media(max-width:650px){
+            .hero{min-height:100svh;padding:32px 14px 90px}.logo{width:min(330px,82vw)}
+            .fallback-logo{font-size:clamp(48px,16vw,82px);letter-spacing:-5px}
+            .tagline{font-size:12px;letter-spacing:3px;margin-bottom:30px}.hero::after{bottom:12px;font-size:8px;letter-spacing:2px}
+            .menu{width:min(760px,96vw);grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+            .menu button{min-width:0;min-height:66px;padding:12px 9px;font-size:clamp(10px,2.8vw,13px);letter-spacing:.3px;line-height:1.3}
+            .menu button span{display:inline;font-size:18px;margin-right:5px;margin-bottom:0}
+            section{min-height:100svh;padding:58px 14px 90px}.section-title{font-size:clamp(34px,12vw,58px);letter-spacing:-2px;line-height:.95}
+            .section-subtitle{font-size:14px;line-height:1.5;margin-bottom:28px}.back{margin-bottom:28px}
+            .show-mode-btn{right:10px;bottom:10px;padding:10px 12px;font-size:11px;letter-spacing:.5px}
+            .radio-box,.curiosity-box,.decade-display,.quiz-question,.underground-box{padding:20px}
+            .radio-info{align-items:flex-start}.radio-title{font-size:18px}.radio-controls button{flex:1 1 130px;min-height:46px}
+            .gallery-grid,.achievement-grid,.styles-grid,.time-grid{grid-template-columns:1fr}
+            .gallery-card{min-height:0;padding:18px}.gallery-art{height:125px}
+            .gallery-filters{display:grid;grid-template-columns:repeat(2,1fr)}.gallery-filter{width:100%;padding:11px 8px;font-size:11px}
+            .decade-buttons{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:420px){
+            .menu button{min-height:68px;padding:12px 14px}.menu button span{font-size:20px}
+            .show-mode-btn{max-width:145px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        }
+
+    
+        /* =========================
+           ROCKWAVE EXPANSION PACK
+        ========================== */
+        body.extreme-night { background:#000 !important; color:#ddd; }
+        body.extreme-night .glow { opacity:.02 !important; }
+        body.extreme-night .menu button,
+        body.extreme-night section,
+        body.extreme-night .style-card,
+        body.extreme-night .radio-box,
+        body.extreme-night .achievement,
+        body.extreme-night .curiosity-box,
+        body.extreme-night .mini-game { background:#000; border-color:#151515; box-shadow:none; }
+        .guitar-strings { display:grid; gap:8px; margin:25px 0; }
+        .guitar-string { height:10px; background:#555; border:0; cursor:pointer; transition:.1s; }
+        .guitar-string:hover,.guitar-string.hit { background:#b00000; box-shadow:0 0 18px #b00000; }
+        .game-score { font-size:28px; font-weight:900; }
+        .song-guess { text-align:center; }
+        .guess-options { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px; }
+        .guess-options button { background:#111; color:#fff; border:1px solid #444; padding:16px; cursor:pointer; font-weight:bold; }
+        .guess-options button:hover { background:#300000; border-color:#b00000; }
+        .band-quiz-result { margin-top:18px; color:#aaa; min-height:24px; }
+        @media(max-width:650px){
+            .guess-options { grid-template-columns:1fr; }
+            .mini-game { padding:22px; }
+        }
+
+    
+        /* =========================
+           ADIVINHE O RIFF
+        ========================== */
+        .riff-box {
+            max-width: 900px;
+            margin: 0 auto;
+            background:#090909;
+            border:1px solid #292929;
+            padding:35px;
+            text-align:center;
+        }
+        .riff-round {
+            color:#777;
+            font-size:12px;
+            letter-spacing:3px;
+            margin-bottom:12px;
+        }
+        .riff-status {
+            min-height:30px;
+            color:#aaa;
+            margin:18px 0;
+            line-height:1.5;
+        }
+        .riff-play {
+            background:#b00000;
+            color:#fff;
+            border:1px solid #d00000;
+            padding:16px 24px;
+            cursor:pointer;
+            font-weight:900;
+            letter-spacing:1px;
+            transition:.2s;
+        }
+        .riff-play:hover { background:#d00000; transform:translateY(-2px); }
+        .riff-play:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+        .riff-options {
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:12px;
+            margin-top:25px;
+        }
+        .riff-options button {
+            background:#111;
+            color:#fff;
+            border:1px solid #444;
+            padding:18px;
+            cursor:pointer;
+            font-weight:bold;
+            transition:.2s;
+        }
+        .riff-options button:hover { background:#300000; border-color:#b00000; transform:translateY(-2px); }
+        .riff-options button:disabled { cursor:default; }
+        .riff-score { color:#aaa; margin-top:25px; }
+        @media(max-width:650px){ .riff-options{grid-template-columns:1fr;} .riff-box{padding:25px;} }
+
+    
+/* =========================
+   ROCKWAVE EXPANSION: MAPA DO ROCK + HALL + MONTE SUA BANDA
+========================= */
+.rock-map-box,.hall-box,.band-builder{max-width:1100px;margin:0 auto;}
+.rock-map-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;}
+.rock-map-card,.hall-card,.band-builder-card{background:#090909;border:1px solid #292929;padding:24px;transition:.2s;}
+.rock-map-card:hover,.hall-card:hover,.band-builder-card:hover{border-color:#a00000;transform:translateY(-3px);}
+.rock-map-card h3,.hall-card h3{margin-bottom:10px;font-size:22px;}
+.rock-map-card p,.hall-card p{color:#888;line-height:1.5;}
+.rock-map-tag{display:inline-block;color:#ff4b4b;font-size:11px;font-weight:900;letter-spacing:2px;margin-bottom:10px;}
+.hall-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+.hall-rank{font-size:12px;color:#666;letter-spacing:3px;margin-bottom:8px;}
+.hall-name{font-size:25px;font-weight:900;margin-bottom:5px;}
+.hall-meta{color:#aaa;}
+.band-builder-form{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.band-builder-form label{color:#888;font-size:12px;letter-spacing:1px;}
+.band-builder-form input,.band-builder-form select{width:100%;margin-top:7px;background:#111;color:#fff;border:1px solid #444;padding:14px;font:inherit;}
+.band-builder-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:5px;}
+.band-builder-actions button{background:#111;color:#fff;border:1px solid #444;padding:14px 18px;cursor:pointer;font-weight:bold;}
+.band-builder-actions button:hover{background:#300000;border-color:#a00000;}
+.band-result{margin-top:20px;border:1px solid #a00000;background:#0b0b0b;padding:25px;display:none;}
+.band-result.show{display:block;}
+.band-result h2{font-size:clamp(30px,6vw,58px);margin-bottom:12px;}
+.band-members{color:#aaa;line-height:1.8;}
+@media(max-width:650px){.band-builder-form{grid-template-columns:1fr;}}
+
+        .rock-globe-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;margin:8px auto 32px;perspective:1600px;perspective-origin:center center}
+        .rock-globe{--globe-x:7deg;--globe-y:0deg;width:min(430px,80vw);aspect-ratio:1;border-radius:50%;position:relative;overflow:hidden;isolation:isolate;background:radial-gradient(circle at 30% 25%,rgba(189,236,255,.98) 0%,rgba(104,200,255,.72) 10%,rgba(26,99,172,.82) 24%,rgba(10,39,62,.92) 52%,rgba(1,8,16,1) 100%);border:1px solid rgba(124,208,255,.56);box-shadow:inset -42px -25px 60px rgba(0,0,0,.8),inset 22px 18px 34px rgba(216,244,255,.24),0 30px 70px rgba(0,0,0,.62),0 0 0 2px rgba(79,155,200,.35),0 0 90px rgba(32,110,190,.21);transform-style:preserve-3d;transform:rotateX(var(--globe-x)) rotateY(var(--globe-y));animation:globeFloat 7s ease-in-out infinite;cursor:grab;touch-action:none}
+        .rock-globe::before{content:"";position:absolute;inset:8%;border-radius:50%;z-index:4;pointer-events:none;background:linear-gradient(110deg,transparent 24%,rgba(255,255,255,.12) 41%,rgba(255,255,255,.28) 47%,rgba(255,255,255,.12) 54%,transparent 70%),radial-gradient(circle at 72% 52%,rgba(255,255,255,.18),transparent 32%);box-shadow:inset 12px 10px 24px rgba(210,237,255,.25),inset -24px -14px 28px rgba(1,7,17,.7);transform:translateZ(18px)}
+        .rock-globe::after{content:"";position:absolute;inset:-3%;border-radius:50%;z-index:5;pointer-events:none;border:1px solid rgba(123,216,255,.7);box-shadow:0 0 28px rgba(67,170,255,.2),inset 0 0 18px rgba(123,216,255,.12);transform:translateZ(24px)}
+        .globe-grid{position:absolute;inset:-5%;z-index:1;border-radius:50%;background:repeating-linear-gradient(0deg,transparent 0 31px,rgba(167,232,255,.14) 31px 32px),repeating-linear-gradient(90deg,transparent 0 31px,rgba(167,232,255,.08) 31px 32px);transform:rotateX(72deg) translateZ(10px) scale(1.08);opacity:.72;pointer-events:none}
+        .globe-grid::before{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(ellipse at 50% 50%,transparent 0 27px,rgba(167,232,255,.17) 28px 29px);transform:scaleX(.48)}
+        .globe-land{position:absolute;width:104%;height:104%;left:-2%;top:-2%;z-index:2;color:#7ad39a;opacity:.95;filter:drop-shadow(2px 3px 2px rgba(0,0,0,.45)) drop-shadow(0 0 18px rgba(25,162,91,.5));pointer-events:none;animation:globeDrift 28s ease-in-out infinite alternate;transform:translateZ(26px) scale(1.04);transform-origin:center}
+        .globe-glow{position:absolute;inset:0;z-index:3;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(11,214,255,.18),rgba(8,12,20,0) 58%);pointer-events:none;transform:translateZ(22px)}
+        .globe-pin{position:absolute;z-index:6;width:17px;height:17px;border-radius:50%;border:2px solid #fff;background:#c90000;box-shadow:0 0 0 5px rgba(255,34,34,.2),0 0 18px rgba(255,52,52,.8),0 0 22px rgba(255,52,52,.35);transform:translate3d(-50%,-50%,32px);cursor:pointer;padding:0;transition:transform .2s,background .2s,box-shadow .2s}
+        .globe-pin:hover,.globe-pin:focus-visible{background:#fff;transform:translate3d(-50%,-50%,32px) scale(1.35);outline:2px solid #fff;outline-offset:4px}
+        .globe-pin[aria-pressed="true"]{background:#fff;box-shadow:0 0 0 7px rgba(255,51,51,.26),0 0 24px rgba(255,255,255,.7)}
+        .globe-pin::after{content:"";position:absolute;inset:-8px;border:1px solid rgba(255,102,102,.55);border-radius:50%;animation:pinPulse 2s ease-out infinite}
+        .globe-caption{font:900 10px/1 Arial,sans-serif;letter-spacing:4px;color:#888;text-align:center}
+        @keyframes globeFloat{0%,100%{transform:rotateX(var(--globe-x)) rotateY(var(--globe-y)) translateY(0)}50%{transform:rotateX(var(--globe-x)) rotateY(var(--globe-y)) translateY(-8px)}}
+        @keyframes globeDrift{from{transform:translateX(-8px) scale(1.03) translateZ(26px)}to{transform:translateX(8px) scale(1.03) translateZ(26px)}}
+        @keyframes pinPulse{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.8);opacity:0}}
+        .rock-region-picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:24px 0}
+        .rock-region{background:linear-gradient(145deg,#171717,#080808);color:#ddd;border:1px solid #333;padding:14px 12px;cursor:pointer;font:700 14px Arial,sans-serif;transition:.2s;box-shadow:inset 0 1px #ffffff08,0 5px 0 #000}
+        .rock-region:hover,.rock-region.active{background:linear-gradient(145deg,#390707,#160000);border-color:#d21b1b;color:#fff;transform:translateY(-2px);box-shadow:0 0 20px #b0000033}
+        .rock-region-detail{background:linear-gradient(145deg,#101010,#070707);border:1px solid #333;border-left:4px solid #a00000;padding:28px;box-shadow:0 18px 35px #0007,inset 0 1px #ffffff08}
+        .rock-region-detail h2{font-size:clamp(24px,4vw,38px);margin:8px 0 14px}
+        .rock-region-detail p{color:#aaa;line-height:1.65}
+        .rock-region-styles,.rock-region-bands{margin-top:20px;padding:17px;background:linear-gradient(145deg,#151515,#0b0b0b);border:1px solid #292929}
+        .rock-region-styles strong,.rock-region-bands strong{display:block;margin-bottom:8px}
+        .rock-region-note{font-size:12px;margin-top:18px;color:#666!important}
+        @media(prefers-reduced-motion:reduce){.rock-globe,.globe-land,.globe-pin::after{animation:none!important}}
+        @media(max-width:650px){.rock-region-detail{padding:20px}.rock-region-picker{grid-template-columns:1fr 1fr}.rock-globe{width:min(320px,78vw)}}
+
+    
+        /* ROCKWAVE RADIO — PLAYER REAL */
+        .radio-player-screen {
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            min-height:320px;
+            background:
+                radial-gradient(circle at center, rgba(170,0,0,.22), transparent 55%),
+                #000 !important;
+            text-align:center;
+        }
+        .radio-visualizer {
+            height:90px;
+            display:flex;
+            align-items:center;
+            gap:6px;
+            margin-bottom:28px;
+        }
+        .radio-visualizer span {
+            width:7px;
+            height:22px;
+            background:#b00000;
+            box-shadow:0 0 14px rgba(220,0,0,.35);
+            animation:radioBars .9s ease-in-out infinite alternate;
+        }
+        .radio-visualizer span:nth-child(2n){animation-delay:-.25s}
+        .radio-visualizer span:nth-child(3n){animation-delay:-.5s}
+        .radio-visualizer span:nth-child(4n){animation-delay:-.7s}
+        @keyframes radioBars {
+            from{height:18px;opacity:.45}
+            to{height:82px;opacity:1}
+        }
+        .radio-onair {
+            font-size:clamp(42px,8vw,78px);
+            font-weight:900;
+            letter-spacing:5px;
+            text-shadow:0 0 30px rgba(190,0,0,.45);
+        }
+        .radio-onair-sub {
+            color:#777;
+            letter-spacing:4px;
+            font-size:12px;
+            margin-top:8px;
+        }
+        .radio-now-playing {
+            margin-top:25px;
+            color:#ff5555;
+            font-weight:900;
+            letter-spacing:3px;
+            font-size:13px;
+        }
+        .radio-volume {
+            display:flex;
+            align-items:center;
+            gap:12px;
+            margin-top:18px;
+            color:#aaa;
+        }
+        .radio-volume input {
+            flex:1;
+            accent-color:#b00000;
+            cursor:pointer;
+        }
+        .radio-volume-label {
+            color:#777;
+            font-size:12px;
+            min-width:90px;
+            text-align:right;
+        }
+        .radio-history {
+            margin-top:25px;
+            padding-top:20px;
+            border-top:1px solid #222;
+            color:#888;
+            line-height:1.5;
+        }
+        .radio-history-title {
+            color:#aaa;
+            font-size:11px;
+            font-weight:900;
+            letter-spacing:3px;
+            margin-bottom:8px;
+        }
+
+        
+        /* =========================
+           ROCKWAVE POLISH + INTERAÇÕES
+        ========================== */
+        .radio-player-screen{
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+            min-height:260px;
+            background:
+                radial-gradient(circle at center,#220000 0%,#070707 42%,#000 100%) !important;
+        }
+        .radio-player-screen::after{
+            content:"LIVE";
+            position:absolute;
+            top:16px;
+            right:18px;
+            color:#ff4b4b;
+            border:1px solid #7a0000;
+            padding:6px 9px;
+            font:900 10px/1 Arial,sans-serif;
+            letter-spacing:2px;
+            animation:radioLivePulse 1.5s ease-in-out infinite;
+        }
+        .radio-onair{
+            position:relative;
+            z-index:2;
+            font-size:clamp(38px,8vw,76px);
+            font-weight:900;
+            letter-spacing:5px;
+            color:#363636;
+            text-shadow:0 0 28px #b00000;
+        }
+        .radio-onair-sub{
+            position:relative;
+            z-index:2;
+            color:#777;
+            letter-spacing:4px;
+            font-size:11px;
+            margin-top:8px;
+        }
+        .radio-now-playing{
+            position:relative;
+            z-index:2;
+            margin-top:24px;
+            color:#fff;
+            font-weight:800;
+            letter-spacing:2px;
+        }
+        .radio-visualizer{
+            position:absolute;
+            left:50%;
+            bottom:34px;
+            transform:translateX(-50%);
+            display:flex;
+            align-items:flex-end;
+            gap:5px;
+            height:48px;
+            opacity:.8;
+        }
+        .radio-visualizer span{
+            display:block;
+            width:5px;
+            height:18px;
+            background:#b00000;
+            box-shadow:0 0 10px #b00000;
+            animation:radioBars .8s ease-in-out infinite alternate;
+        }
+        .radio-visualizer span:nth-child(2n){animation-delay:.12s}
+        .radio-visualizer span:nth-child(3n){animation-delay:.24s}
+        .radio-visualizer span:nth-child(4n){animation-delay:.36s}
+        @keyframes radioBars{from{height:8px;opacity:.45}to{height:42px;opacity:1}}
+        @keyframes radioLivePulse{50%{opacity:.45;box-shadow:0 0 18px #b00000}}
+        #radioProgressFill{animation:radioProgressPulse 1.4s ease-in-out infinite alternate}
+        @keyframes radioProgressPulse{from{opacity:.55}to{opacity:1}}
+        .radio-controls button:focus-visible,
+        .radio-volume input:focus-visible,
+        .rock-region:focus-visible,
+        .globe-pin:focus-visible{
+            outline:2px solid #fff;
+            outline-offset:3px;
+        }
+
+        /* Mapa: globo realmente arrastável */
+        .rock-globe{
+            --globe-x:7deg;
+            --globe-y:0deg;
+            cursor:grab;
+            touch-action:none;
+            transform-style:preserve-3d;
+            will-change:transform;
+        }
+        .rock-globe.dragging{
+            cursor:grabbing;
+            animation:none !important;
+        }
+        @keyframes globeFloat{
+            0%,100%{transform:rotateX(var(--globe-x)) rotateY(var(--globe-y)) translateY(0)}
+            50%{transform:rotateX(var(--globe-x)) rotateY(var(--globe-y)) translateY(-8px)}
+        }
+        .rock-map-help{
+            max-width:700px;
+            margin:0 auto 18px;
+            color:#666;
+            text-align:center;
+            font-size:12px;
+            letter-spacing:1px;
+        }
+        @media(max-width:650px){
+            .radio-player-screen{min-height:230px}
+            .radio-onair{letter-spacing:2px}
+            .radio-visualizer{bottom:26px}
+        }
+
+        
+/* =========================
+   ROCKWAVE 2026 — MEGA EXPANSION
+========================= */
+.rock-map-controls{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:0 auto 20px}
+.rock-map-controls button,.rock-map-search{background:#0d0d0d;color:#fff;border:1px solid #444;padding:12px 16px;font:inherit}
+.rock-map-controls button{cursor:pointer;font-weight:900}
+.rock-map-controls button:hover{background:#300000;border-color:#b00000}
+.rock-map-search{width:min(360px,90vw);outline:none}
+.rock-map-search:focus{border-color:#a00000;box-shadow:0 0 0 2px #a0000022}
+.hall-card{position:relative;overflow:hidden}
+.hall-card::after{content:"🤘";position:absolute;right:14px;bottom:10px;opacity:.07;font-size:52px;transform:rotate(-12deg)}
+.hall-card:hover::after{opacity:.16}
+.hall-era{display:inline-block;margin-top:10px;padding:5px 8px;border:1px solid #333;color:#777;font-size:10px;letter-spacing:2px}
+.radio-history{display:none!important}
+.radio-player-screen.is-playing .radio-visualizer span{animation-duration:.45s}
+.radio-player-screen:not(.is-playing) .radio-visualizer span{animation-play-state:paused;opacity:.28}
+.radio-connection{margin-top:12px;color:#666;font-size:11px;letter-spacing:2px;text-align:center}
+.battle-box{max-width:1100px;margin:0 auto}
+.battle-tournament-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin-bottom:22px;padding:24px;background:#090909;border:1px solid #292929}
+.battle-tournament-head h2{font-size:clamp(25px,4vw,42px);margin:9px 0 5px}
+.battle-tournament-head p{color:#888;line-height:1.5}
+.battle-edition{font-size:12px;letter-spacing:3px;color:#666;white-space:nowrap}
+.battle-edition strong{color:#fff;font-size:22px}
+.battle-arena{display:grid;grid-template-columns:1fr 90px 1fr;gap:16px;align-items:stretch}
+.battle-card{background:#090909;border:1px solid #292929;padding:30px;text-align:center;min-height:250px;display:flex;flex-direction:column;justify-content:center;transition:.2s;cursor:pointer;color:#fff}
+.battle-card:hover{border-color:#a00000;transform:translateY(-4px);background:#100000}
+.battle-card:disabled{cursor:not-allowed;opacity:.55}
+.battle-card h2{font-size:clamp(28px,5vw,52px);margin:10px 0}
+.battle-card p{color:#888;line-height:1.5}
+.battle-vs{display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:900;color:#a00000}
+.battle-result{text-align:center;margin-top:16px;min-height:30px;color:#ff5555;font-weight:900}
+.battle-bracket{margin-top:35px}
+.battle-bracket-title{font-size:12px;letter-spacing:3px;color:#666;margin-bottom:12px}
+.battle-bracket-grid{display:grid;grid-template-columns:repeat(5,minmax(130px,1fr));gap:10px;overflow-x:auto;padding-bottom:8px}
+.battle-round{background:#090909;border:1px solid #222;padding:12px;min-width:130px}
+.battle-round h3{font-size:11px;letter-spacing:2px;color:#aaa;margin-bottom:10px}
+.battle-match{border:1px solid #242424;background:#0d0d0d;padding:9px;margin-bottom:7px;font-size:12px;line-height:1.3}
+.battle-match:last-child{margin-bottom:0}
+.battle-match.winner{border-color:#6f0000;color:#fff}
+.battle-match.eliminated{opacity:.35;text-decoration:line-through}
+.battle-match small{display:block;color:#666;margin-top:3px;text-decoration:none}
+.battle-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:25px}
+.battle-actions button{background:#111;color:#fff;border:1px solid #444;padding:14px 20px;cursor:pointer;font-weight:900}
+.battle-actions button:hover{background:#300000;border-color:#b00000}
+@media(max-width:700px){
+    .battle-tournament-head{align-items:flex-start;flex-direction:column}
+    .battle-arena{grid-template-columns:1fr}
+    .battle-vs{min-height:20px}
+    .battle-card{min-height:180px}
+    .battle-bracket-grid{grid-template-columns:repeat(5,150px)}
+}
+
+        
+/* ROCKWAVE AUTH */
+body.rw-locked > :not(#rw-auth):not(script){display:none!important}
+#rw-auth{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(4,4,4,.97);background-image:radial-gradient(circle at 50% 20%,rgba(150,0,0,.22),transparent 42%);color:#fff}
+#rw-auth.rw-hidden{display:none}.rw-auth-card{width:min(440px,94vw);padding:32px;background:#0d0d0d;border:1px solid #3a3a3a;border-left:5px solid #a00000;box-shadow:0 20px 70px rgba(0,0,0,.7)}
+.rw-auth-card h1{font-size:clamp(34px,8vw,58px);margin-bottom:6px;letter-spacing:-2px}.rw-auth-card .rw-sub{color:#aaa;margin-bottom:24px}.rw-auth-tabs{display:flex;gap:8px;margin-bottom:18px}.rw-auth-tabs button,.rw-auth-card button{border:1px solid #444;background:#151515;color:#fff;padding:12px 14px;cursor:pointer;font-weight:800;letter-spacing:.5px}.rw-auth-tabs button.active,.rw-auth-card .rw-primary{background:#850000;border-color:#b00000}.rw-auth-card input{width:100%;padding:13px 14px;margin:7px 0;background:#080808;color:#fff;border:1px solid #444;outline:none}.rw-auth-card input:focus{border-color:#b00000}#rw-auth-submit{width:100%;margin-top:10px}#rw-auth-message{min-height:42px;margin-top:14px;color:#bbb;line-height:1.45}#rw-auth-message.error{color:#ff7777}#rw-auth-message.success{color:#79d98a}#rw-auth-forgot{background:transparent!important;border:0!important;padding:4px 0!important;color:#aaa;text-decoration:underline}#rw-account{position:fixed;top:14px;right:14px;z-index:9000;display:none;align-items:center;gap:8px;padding:8px 10px;background:#0d0d0d;border:1px solid #333;color:#ddd;font-size:12px}#rw-account button{background:#850000;color:#fff;border:0;padding:6px 9px;cursor:pointer;font-weight:800}
+
+body :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(.radio-onair):not(svg):not(path):not(:has(h1,h2,h3,h4,h5,h6)){
+    color:#808080!important;
+}
+</style>
+</head>
+
+<body class="rw-locked">
+<div id="rw-auth" aria-label="Acesso ao RockWave"><div class="rw-auth-card"><h1>ROCKWAVE</h1><div class="rw-sub">O som ainda não morreu. Mas agora a entrada é exclusiva. 🤘</div><div class="rw-auth-tabs"><button id="rw-tab-login" class="active" type="button">ENTRAR</button><button id="rw-tab-signup" type="button">CRIAR CONTA</button></div><form id="rw-auth-form"><input id="rw-email" type="email" autocomplete="email" placeholder="Seu e-mail" required><input id="rw-password" type="password" autocomplete="current-password" placeholder="Senha (mín. 6 caracteres)" minlength="6" required><button id="rw-auth-submit" class="rw-primary" type="submit">ENTRAR NO ROCKWAVE</button></form><button id="rw-auth-forgot" type="button">Esqueci minha senha</button><div id="rw-auth-message" role="status" aria-live="polite"></div><div style="margin-top:16px;padding-top:14px;border-top:1px solid #292929;color:#777;font-size:12px;line-height:1.45">O acesso sem conta será liberado somente para doadores após a verificação real da doação.</div></div></div><div id="rw-account"><span id="rw-account-email"></span><button id="rw-logout" type="button">SAIR</button></div>
+
+    <!-- =========================
+         PÁGINA INICIAL
+    ========================== -->
+
+    <main id="home" class="hero">
+
+        <button class="show-mode-btn" id="showModeButton" type="button" aria-pressed="false" onclick="alternarModoShow()">🎸 MODO SHOW</button>
+
+
+        <div class="glow"></div>
+
+        <!-- Se você já tiver o logo, coloque rockwave-logo.png
+             na mesma pasta deste arquivo -->
+        <img
+            src="rockwave-logo.png"
+            class="logo"
+            alt="RockWave"
+            onerror="this.style.display='none'; document.getElementById('fallbackLogo').style.display='block';"
+        >
+
+        <div
+            id="fallbackLogo"
+            class="fallback-logo"
+            style="display:none;"
+        >
+            ROCKWAVE
+        </div>
+
+        <p class="tagline">O som ainda não morreu.</p>
+
+        <div class="menu">
+            <button type="button" onclick="abrir('doacao')"><span>❤️</span>APOIE O ROCKWAVE</button>
+            <button onclick="abrir('rockmap')"><span>🌍</span>MAPA DO ROCK</button>
+            <button onclick="abrir('hall')"><span>🏆</span>HALL DA FAMA</button>
+            <button onclick="abrir('createband')"><span>🤘</span>MONTE SUA BANDA</button>
+
+<button onclick="abrir('estilos')">
+                <span>🎸</span>
+                DESCUBRA SEU ESTILO
+            </button>
+
+            <button onclick="abrir('radio')">
+                <span>📻</span>
+                ROCKWAVE RADIO
+            </button>
+
+            <button onclick="abrir('explicados')">
+                <span>🤘</span>
+                ESTILOS EXPLICADOS
+            </button>
+
+            <button onclick="abrir('extras')">
+                <span>🕵️</span>
+                EXTRAS
+            </button>
+            <button onclick="abrir('curiosidades')">
+                <span>🧠</span>
+                ROCK CURIOSIDADES
+            </button>
+
+            <button onclick="abrir('conquistas')">
+                <span>🏆</span>
+                CONQUISTAS
+            </button>
+
+            <button onclick="abrir('maquina')">
+                <span>🕰️</span>
+                MÁQUINA DO TEMPO
+            </button><button onclick="abrir('quizbandas')"><span>🧠</span>QUIZ DE BANDAS</button>
+            <button onclick="abrir('adivinhe')"><span>🎵</span>ADIVINHE A MÚSICA</button>
+            <button onclick="abrir('guitarra')"><span>🎮</span>MINIGAME DE GUITARRA</button>
+            <button onclick="abrir('riffguess')"><span>🎶</span>ADIVINHE O RIFF</button><button id="extremeNightButton" type="button" aria-pressed="false" onclick="alternarNoiteExtrema()"><span>🌑</span>NOITE EXTREMA</button>
+
+<button type="button" onclick="abrir('batalha')"><span>⚔️</span>BATALHA DE BANDAS</button>
+
+<button onclick="abrir('galeria')">
+                <span>🖼️</span>
+                GALERIA ROCKWAVE
+            </button>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =========================
+         ENTRAR / CRIAR CONTA
+    ========================== -->
+<!-- =========================
+         ESTILOS
+    ========================== -->
+
+    <section id="estilos">
+<button class="back" onclick="voltar()">← VOLTAR</button>
+<h1 class="section-title">Descubra seu estilo</h1>
+<p class="section-subtitle">Responda 10 perguntas e descubra qual das 50 ondas da RockWave combina mais com você. 🤘</p>
+<div id="quizBox">
+  <div id="quizProgress">PERGUNTA 1 DE 10</div>
+  
+<div class="quiz-question" data-question="0">
+  <h2>1. Qual energia você quer sentir?</h2>
+  <div class="quiz-options">
+    <button type="button" onclick="responder(0,'Heavy Metal')">🔥 🔥 Porrada e peso</button><button type="button" onclick="responder(0,'Death Metal')">🎸 Death Metal</button><button type="button" onclick="responder(0,'Doom Metal')">🖤 Doom Metal</button><button type="button" onclick="responder(0,'Black Metal')">⚡ Black Metal</button><button type="button" onclick="responder(0,'Metalcore')">🎧 Metalcore</button>
+  </div>
+</div>
+
+<div class="quiz-question" data-question="1">
+  <h2>2. Qual guitarra combina mais com você?</h2>
+  <div class="quiz-options">
+    <button type="button" onclick="responder(1,'Rock and Roll')">🔥 🎸 Riff clássico</button><button type="button" onclick="responder(1,'Blues Rock')">🎸 Blues Rock</button><button type="button" onclick="responder(1,'Hard Rock')">🖤 Hard Rock</button><button type="button" onclick="responder(1,'Garage Rock')">⚡ Garage Rock</button><button type="button" onclick="responder(1,'Country Rock')">🎧 Country Rock</button>
+  </div>
+</div>
+
+<div class="quiz-question" data-question="2">
+  <h2>3. Escolha uma atmosfera</h2>
+  <div class="quiz-options">
+    <button type="button" onclick="responder(2,'Gothic Rock')">🔥 🖤 Sombria</button><button type="button" onclick="responder(2,'Post-Punk')">🎸 Post-Punk</button><button type="button" onclick="responder(2,'Industrial Rock')">🖤 Industrial Rock</button><button type="button" onclick="responder(2,'Black Metal')">⚡ Black Metal</button><button type="button" onclick="responder(2,'Doom Metal')">🎧 Doom Metal</button>
+  </div>
+</div>
+
+<div class="quiz-question" data-question="3">
+  <h2>4. Qual atitude?</h2>
+  <div class="quiz-options">
+    <button type="button" onclick="responder(3,'Punk Rock')">🔥 Ⓐ Rebeldia</button><button type="button" onclick="responder(3,'Hardcore Punk')">🎸 Hardcore Punk</button><button type="button" onclick="responder(3,'Post-Hardcore')">🖤 Post-Hardcore</button><button type="button" onclick="responder(3,'Emo Rock')">⚡ Emo Rock</button><button type="button" onclick="responder(3,'Alternative Rock')">🎧 Alternative Rock</button>
+  </div>
+</div>
+
+<div class="quiz-question" data-question="4">
+  <h2>5. Qual viagem sonora?</h2>
+  <div class="quiz-options">
+    <button type="button" onclick="responder(4,'Psychedelic Rock')">🔥 🌈 Psicodélica</button><button type="button" onclick="responder(4,'Acid Rock')">🎸 Acid Rock</button><button type="button" onclick="responder(4,'Progressive Rock')">🖤 Progressive Rock</button><button type="button" onclick="responder(4,'Art Rock')">⚡ Art Rock</button><button type="button" onclick="responder(4,'Experimental Rock')">🎧 Experimental Rock</button>
+  </div>
+</div>
+
+<div class="quiz-question" data-question="5">
+  <h2>6. Qual vibe para cantar junto?</h2>
+  <div class="quiz-options">
+    <button type="button" onclick="responder(5,'Pop Rock')">🔥 🎤 Hino</button><button type="button" onclick="responder(5,'Arena Rock')">🎸 Arena Rock</button><button type="button" onclick="responder(5,'Power Metal')">🖤 Power Metal</button><button type="button" onclick="responder(5,'Britpop')">⚡ Britpop</button><button type="button" onclick="responder(5,'Post-Grunge')">🎧 Post-Grunge</button>
+  </div>
+</div>
+
+<div class="quiz-question" data-question="6">
+  <h2>7. Qual mistura te chama?</h2>
+  <div class="quiz-options">
+    <button type="button" onclick="responder(6,'Rap Rock')">🔥 💿 Fusão</button><button type="button" onclick="responder(6,'Funk Rock')">🎸 Funk Rock</button><button type="button" onclick="responder(6,'Reggae Rock')">🖤 Reggae Rock</button><button type="button" onclick="responder(6,'Latin Rock')">⚡ Latin Rock</button><button type="button" onclick="responder(6,'Samba Rock')">🎧 Samba Rock</button>
+  </div>
+</div>
+
+<div class="quiz-question" data-question="7">
+  <h2>8. Qual som mais experimental?</h2>
+  <div class="quiz-options">
+    <button type="button" onclick="responder(7,'Math Rock')">🔥 🧠 Diferentão</button><button type="button" onclick="responder(7,'Noise Rock')">🎸 Noise Rock</button><button type="button" onclick="responder(7,'Post-Rock')">🖤 Post-Rock</button><button type="button" onclick="responder(7,'Shoegaze')">⚡ Shoegaze</button><button type="button" onclick="responder(7,'Experimental Rock')">🎧 Experimental Rock</button>
+  </div>
+</div>
+
+<div class="quiz-question" data-question="8">
+  <h2>9. Qual raiz você escolheria?</h2>
+  <div class="quiz-options">
+    <button type="button" onclick="responder(8,'Rockabilly')">🔥 🌾 Raiz</button><button type="button" onclick="responder(8,'Surf Rock')">🎸 Surf Rock</button><button type="button" onclick="responder(8,'Folk Rock')">🖤 Folk Rock</button><button type="button" onclick="responder(8,'Country Rock')">⚡ Country Rock</button><button type="button" onclick="responder(8,'Southern Rock')">🎧 Southern Rock</button>
+  </div>
+</div>
+
+<div class="quiz-question" data-question="9">
+  <h2>10. Qual estética te representa?</h2>
+  <div class="quiz-options">
+    <button type="button" onclick="responder(9,'Glam Rock')">🔥 ✨ Diferente</button><button type="button" onclick="responder(9,'New Wave')">🎸 New Wave</button><button type="button" onclick="responder(9,'Indie Rock')">🖤 Indie Rock</button><button type="button" onclick="responder(9,'Nu Metal')">⚡ Nu Metal</button><button type="button" onclick="responder(9,'Thrash Metal')">🎧 Thrash Metal</button>
+  </div>
+</div>
+  <div id="quizResult" class="quiz-result">
+    <div class="result-kicker">SEU RESULTADO</div>
+    <div id="resultGenre"></div>
+    <p id="resultText"></p>
+    <button class="quiz-restart" onclick="reiniciarQuiz()">🔄 FAZER DE NOVO</button>
+  </div>
+</div>
+<h2 class="section-title small-title">50 RESULTADOS POSSÍVEIS</h2>
+<div class="styles-grid"><div class="style-card"><h3>🎸 Rock and Roll</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🕺 Rockabilly</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🌊 Surf Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🎶 Blues Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🌈 Psychedelic Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🤘 Hard Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🚀 Progressive Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>✨ Glam Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>⚡ Heavy Metal</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>Ⓐ Punk Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🖤 Gothic Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>📡 New Wave</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🌑 Post-Punk</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🧨 Thrash Metal</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🏴 Alternative Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🎤 Pop Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🩸 Death Metal</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🌲 Grunge</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>💿 Industrial Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🎧 Shoegaze</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🔥 Nu Metal</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🧱 Post-Grunge</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>💥 Metalcore</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🎙️ Emo Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🕶️ Indie Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🥁 Post-Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🏍️ Stoner Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🌎 Britpop</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>📻 Garage Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🌾 Folk Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🤠 Country Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🌵 Southern Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🏟️ Arena Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🎨 Art Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🧪 Acid Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🕺 Funk Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🎙️ Rap Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🌴 Reggae Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🌎 Latin Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🇧🇷 Samba Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>💣 Hardcore Punk</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>⚔️ Post-Hardcore</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🧮 Math Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>📢 Noise Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🌋 Doom Metal</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>☠️ Black Metal</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🏆 Power Metal</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🎻 Symphonic Metal</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🧠 Progressive Metal</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div>
+<div class="style-card"><h3>🧬 Experimental Rock</h3><p>Resultado possível do quiz. Descubra se essa é a sua onda.</p></div></div>
+</section>
+
+
+
+    <!-- =========================
+         GALERIA ROCKWAVE
+    ========================== -->
+
+
+    <section id="quizbandas">
+        <div class="back" onclick="voltar()">← VOLTAR</div>
+        <h1 class="section-title">QUIZ DE BANDAS</h1>
+        <p class="section-subtitle">10 perguntas. Veja quantas bandas você reconhece.</p>
+        <div class="mini-game">
+            <div id="bandQuizProgress" class="radio-meta">PERGUNTA 1 DE 10</div>
+            <div id="bandQuizQuestion"><h2>Qual banda lançou “Nevermind”?</h2></div>
+            <div id="bandQuizOptions" class="guess-options"></div>
+            <div id="bandQuizResult" class="band-quiz-result"></div>
+            <button id="bandQuizNext" class="random-button" type="button" onclick="proximaPerguntaBanda()" style="display:none">PRÓXIMA →</button>
+        </div>
+    </section>
+
+    <section id="adivinhe">
+        <div class="back" onclick="voltar()">← VOLTAR</div>
+        <h1 class="section-title">ADIVINHE A MÚSICA</h1>
+        <p class="section-subtitle">10 pistas diferentes para testar seu ouvido.</p>
+        <div class="mini-game song-guess">
+            <div id="songGuessProgress" class="radio-meta">PERGUNTA 1 DE 10</div>
+            <div id="songGuessClue"><h2>🎤 Pista: “I'm gonna fight 'em off...”</h2></div>
+            <div id="songGuessOptions" class="guess-options"></div>
+            <div id="songGuessResult" class="band-quiz-result"></div>
+            <button id="songGuessNext" class="random-button" type="button" onclick="proximaPerguntaMusica()" style="display:none">PRÓXIMA →</button>
+        </div>
+    </section>
+
+    <section id="guitarra">
+        <div class="back" onclick="voltar()">← VOLTAR</div>
+        <h1 class="section-title">MINIGAME DE GUITARRA</h1>
+        <p class="section-subtitle">Clique nas cordas para fazer um riff. Acerte 8 batidas para liberar a conquista.</p>
+        <div class="mini-game">
+            <div class="game-score">Riff: <span id="guitarScore">0</span> / 8</div>
+            <div class="guitar-strings">
+                <button class="guitar-string" onclick="tocarCorda(this)"></button>
+                <button class="guitar-string" onclick="tocarCorda(this)"></button>
+                <button class="guitar-string" onclick="tocarCorda(this)"></button>
+                <button class="guitar-string" onclick="tocarCorda(this)"></button>
+                <button class="guitar-string" onclick="tocarCorda(this)"></button>
+                <button class="guitar-string" onclick="tocarCorda(this)"></button>
+            </div>
+            <div id="guitarMessage" class="band-quiz-result">A guitarra está esperando. 🎸 Clique nas cordas e aumente o volume.</div>
+            <div class="radio-meta">🔊 O som é gerado pelo navegador — não precisa baixar nenhum arquivo.</div>
+        </div>
+    </section>
+
+    <section id="riffguess">
+        <div class="back" onclick="voltar()">← VOLTAR</div>
+        <h1 class="section-title">ADIVINHE O RIFF</h1>
+        <p class="section-subtitle">Ouça um riff sintetizado e descubra qual música ele representa. 🎸</p>
+        <div class="riff-box">
+            <div id="riffRound" class="riff-round">RIFF 1 DE 5</div>
+            <div class="game-score">Pontuação: <span id="riffScore">0</span> / 5</div>
+            <button id="riffPlay" class="riff-play" type="button" onclick="tocarRiff()">▶ OUVIR RIFF</button>
+            <div id="riffStatus" class="riff-status">Aumente o volume e tente reconhecer as notas.</div>
+            <div id="riffOptions" class="riff-options"></div>
+        </div>
+    </section>
+
+    <section id="galeria">
+
+        <button class="back" onclick="voltar()">← VOLTAR</button>
+
+        <h1 class="section-title">Galeria RockWave</h1>
+
+        <p class="section-subtitle">
+            Um arquivo visual do universo RockWave.
+        </p>
+
+        <p class="gallery-intro">
+            Aqui ficam artes, versões da identidade e momentos especiais do projeto.
+            A galeria pode crescer junto com a RockWave.
+        </p>
+
+        <div class="gallery-filters" role="group" aria-label="Filtros da galeria">
+            <button class="gallery-filter active" onclick="filtrarGaleria('todos', this)">TODOS</button>
+            <button class="gallery-filter" onclick="filtrarGaleria('identidade', this)">IDENTIDADE</button>
+            <button class="gallery-filter" onclick="filtrarGaleria('segredos', this)">SEGREDOS</button>
+            <button class="gallery-filter" onclick="filtrarGaleria('radio', this)">RÁDIO</button>
+        </div>
+
+        <div class="gallery-grid">
+
+            <article class="gallery-card" data-category="identidade">
+                <span class="gallery-label">RW-001</span>
+                <div class="gallery-art">
+                    <strong class="mini-logo">ROCKWAVE</strong>
+                </div>
+                <h3>Identidade RockWave</h3>
+                <p>A marca principal do projeto e o visual que representa a RockWave.</p>
+            </article>
+
+            <article class="gallery-card" data-category="identidade">
+                <span class="gallery-label">RW-002</span>
+                <div class="gallery-art">
+                    <strong>O SOM<br>AINDA NÃO MORREU.</strong>
+                </div>
+                <h3>O som ainda não morreu.</h3>
+                <p>A frase que virou a assinatura da RockWave.</p>
+            </article>
+
+            <article class="gallery-card" data-category="radio">
+                <span class="gallery-label">RW-003</span>
+                <div class="gallery-art">
+                    <strong>RADIO<br>LIVE</strong>
+                </div>
+                <h3>RockWave Radio</h3>
+                <p>O arquivo visual da rádio que mantém os riffs tocando.</p>
+            </article>
+
+            <article class="gallery-card" data-category="segredos">
+                <span class="gallery-label">RW-004</span>
+                <div class="gallery-art">
+                    <strong>1991</strong>
+                </div>
+                <h3>Sinal de 1991</h3>
+                <p>Uma referência escondida ao universo do rock que também aparece nos segredos.</p>
+            </article>
+
+            <article class="gallery-card" data-category="segredos">
+                <span class="gallery-label">RW-005</span>
+                <div class="gallery-art">
+                    <strong>EXE</strong>
+                </div>
+                <h3>RockWave.EXE</h3>
+                <p>Uma das identidades usadas nos Easter Eggs da RockWave.</p>
+            </article>
+
+            <article class="gallery-card" data-category="identidade">
+                <span class="gallery-label">RW-006</span>
+                <div class="gallery-art">
+                    <strong>🤘</strong>
+                </div>
+                <h3>Arquivo aberto</h3>
+                <p>Este espaço fica preparado para receber novas artes e imagens do projeto.</p>
+            </article>
+
+        </div>
+
+        <div class="gallery-note">
+            ARQUIVO: 006 ENTRADAS • A GALERIA ESTÁ EM EXPANSÃO.
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         RÁDIO
+    ========================== -->
+
+    <section id="radio">
+
+        <button class="back" onclick="voltar()">← VOLTAR</button>
+
+        <h1 class="section-title">RockWave Radio</h1>
+
+        <p class="section-subtitle">
+            24/7, com o rock tocando direto do servidor. 🤘
+        </p>
+
+        <div class="radio-box">
+
+            <div class="radio-screen radio-player-screen">
+                <div class="radio-visualizer" aria-hidden="true">
+                    <span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <div class="radio-onair">ROCKWAVE</div>
+                <div class="radio-onair-sub">RADIO • 24/7 ROCK</div>
+                <div id="radioNowPlaying" class="radio-now-playing">Pronto para tocar</div>
+            </div>
+
+            <div class="radio-live"><span class="live-dot"></span> ROCKWAVE RADIO • STREAM AO VIVO</div>
+
+            <div class="radio-info">
+                <div>
+                    <div id="radioTitle" class="radio-title">RockWave Radio</div>
+                    <div id="radioStatus" class="radio-status">Aguardando reprodução</div>
+                </div>
+                <div id="radioVolumeLabel" class="radio-volume-label">Volume 80%</div>
+            </div>
+
+            <audio id="rockwaveAudio" preload="none">
+                <source src="https://eu8.fastcast4u.com/proxy/rock/stream" type="audio/mpeg">
+                Seu navegador não suporta áudio.
+            </audio>
+
+            <div class="radio-progress">
+                <div id="radioProgressFill"></div>
+            </div>
+            <div class="radio-meta" id="radioMeta">STREAM AO VIVO • 24/7 ROCK</div>
+
+            <div class="radio-controls">
+                <button type="button" onclick="ligarRadio()">▶ TOCAR RÁDIO</button>
+                <button type="button" onclick="pausarRadio()">⏸ PAUSAR</button>
+            </div>
+
+            <div class="radio-volume">
+                <span>🔊</span>
+                <input id="radioVolume" type="range" min="0" max="100" value="80"
+                       aria-label="Volume da RockWave Radio"
+                       oninput="alterarVolumeRadio(this.value)">
+            </div>
+
+            <div class="radio-connection" id="radioConnection">● SERVIDOR ONLINE • STREAM 24/7</div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         ESTILOS EXPLICADOS
+    ========================== -->
+
+    <section id="explicados">
+    <button class="back" onclick="voltar()">← VOLTAR</button>
+    <h1 class="section-title">Estilos explicados</h1>
+    <p class="section-subtitle">Um guia rápido de sonoridades, épocas e bandas que ajudaram a defini-las. 🤘</p>
+    <div class="styles-grid">
+        <div class="style-card"><h3>🎸 Rock and Roll</h3><p><strong>Surgimento:</strong> anos 1950</p><p><strong>Bandas/artistas:</strong> Chuck Berry, Little Richard, Elvis Presley.</p></div>
+        <div class="style-card"><h3>🕺 Rockabilly</h3><p><strong>Surgimento:</strong> anos 1950</p><p><strong>Bandas/artistas:</strong> Elvis Presley, Carl Perkins, Buddy Holly.</p></div>
+        <div class="style-card"><h3>🌊 Surf Rock</h3><p><strong>Surgimento:</strong> fim dos anos 1950–1960</p><p><strong>Bandas:</strong> Dick Dale, The Ventures, The Beach Boys.</p></div>
+        <div class="style-card"><h3>🎶 Blues Rock</h3><p><strong>Surgimento:</strong> anos 1960</p><p><strong>Bandas/artistas:</strong> Cream, The Yardbirds, Jimi Hendrix.</p></div>
+        <div class="style-card"><h3>🌈 Psychedelic Rock</h3><p><strong>Surgimento:</strong> meados dos anos 1960</p><p><strong>Bandas:</strong> The Beatles, Jefferson Airplane, Pink Floyd.</p></div>
+        <div class="style-card"><h3>🤘 Hard Rock</h3><p><strong>Surgimento:</strong> anos 1960</p><p><strong>Bandas:</strong> Led Zeppelin, Deep Purple, AC/DC, Aerosmith.</p></div>
+        <div class="style-card"><h3>🚀 Rock Progressivo</h3><p><strong>Surgimento:</strong> fim dos anos 1960</p><p><strong>Bandas:</strong> King Crimson, Yes, Genesis, Rush.</p></div>
+        <div class="style-card"><h3>✨ Glam Rock</h3><p><strong>Surgimento:</strong> início dos anos 1970</p><p><strong>Artistas/bandas:</strong> David Bowie, T. Rex, Sweet, Roxy Music.</p></div>
+        <div class="style-card"><h3>⚡ Heavy Metal</h3><p><strong>Surgimento:</strong> fim dos anos 1960–1970</p><p><strong>Bandas:</strong> Black Sabbath, Judas Priest, Motörhead.</p></div>
+        <div class="style-card"><h3>Ⓐ Punk Rock</h3><p><strong>Surgimento:</strong> meados dos anos 1970</p><p><strong>Bandas:</strong> Ramones, Sex Pistols, The Clash, Dead Kennedys.</p></div>
+        <div class="style-card"><h3>🖤 Gothic Rock</h3><p><strong>Surgimento:</strong> fim dos anos 1970–1980</p><p><strong>Bandas:</strong> Bauhaus, The Cure, The Sisters of Mercy.</p></div>
+        <div class="style-card"><h3>📡 New Wave</h3><p><strong>Surgimento:</strong> fim dos anos 1970–1980</p><p><strong>Bandas:</strong> Talking Heads, Blondie, The Police, Devo.</p></div>
+        <div class="style-card"><h3>🧨 Thrash Metal</h3><p><strong>Surgimento:</strong> início dos anos 1980</p><p><strong>Bandas:</strong> Metallica, Slayer, Megadeth, Anthrax.</p></div>
+        <div class="style-card"><h3>🏴 Rock Alternativo</h3><p><strong>Surgimento:</strong> fim dos anos 1970–1980</p><p><strong>Bandas:</strong> R.E.M., Pixies, Sonic Youth, The Replacements.</p></div>
+        <div class="style-card"><h3>🎤 Pop Rock</h3><p><strong>Surgimento:</strong> anos 1970–1980</p><p><strong>Bandas/artistas:</strong> Queen, The Cars, Elton John, Fleetwood Mac.</p></div>
+        <div class="style-card"><h3>🩸 Death Metal</h3><p><strong>Surgimento:</strong> meados dos anos 1980</p><p><strong>Bandas:</strong> Death, Possessed, Morbid Angel, Cannibal Corpse.</p></div>
+        <div class="style-card"><h3>🌲 Grunge</h3><p><strong>Surgimento:</strong> fim dos anos 1980; auge nos 1990</p><p><strong>Bandas:</strong> Nirvana, Pearl Jam, Soundgarden, Alice in Chains.</p></div>
+        <div class="style-card"><h3>💿 Industrial Rock</h3><p><strong>Surgimento:</strong> fim dos anos 1970–1980</p><p><strong>Bandas:</strong> Nine Inch Nails, Ministry, KMFDM.</p></div>
+        <div class="style-card"><h3>🎧 Shoegaze</h3><p><strong>Surgimento:</strong> fim dos anos 1980</p><p><strong>Bandas:</strong> My Bloody Valentine, Slowdive, Ride.</p></div>
+        <div class="style-card"><h3>🔥 Nu Metal</h3><p><strong>Surgimento:</strong> meados dos anos 1990</p><p><strong>Bandas:</strong> Korn, Deftones, Limp Bizkit, Linkin Park.</p></div>
+        <div class="style-card"><h3>💥 Metalcore</h3><p><strong>Surgimento:</strong> anos 1990–2000</p><p><strong>Bandas:</strong> Converge, Killswitch Engage, As I Lay Dying.</p></div>
+        <div class="style-card"><h3>🎙️ Emo / Emo Rock</h3><p><strong>Surgimento:</strong> 1980s; novas ondas nos 1990–2000</p><p><strong>Bandas:</strong> Rites of Spring, Jimmy Eat World, My Chemical Romance.</p></div>
+        <div class="style-card"><h3>🕶️ Indie Rock</h3><p><strong>Surgimento:</strong> anos 1980; expansão nos 1990–2000</p><p><strong>Bandas:</strong> The Smiths, Pavement, Arctic Monkeys, The Strokes.</p></div>
+        <div class="style-card"><h3>🧱 Post-Grunge</h3><p><strong>Surgimento:</strong> meados dos anos 1990</p><p><strong>Bandas:</strong> Foo Fighters, Bush, Creed, Silverchair.</p></div>
+        <div class="style-card"><h3>⚔️ Post-Hardcore</h3><p><strong>Surgimento:</strong> anos 1980; novas ondas depois</p><p><strong>Bandas:</strong> Fugazi, At the Drive-In, Thrice.</p></div>
+        <div class="style-card"><h3>🌑 Post-Punk</h3><p><strong>Surgimento:</strong> fim dos anos 1970</p><p><strong>Bandas:</strong> Joy Division, Siouxsie and the Banshees, Gang of Four.</p></div>
+        <div class="style-card"><h3>🥁 Post-Rock</h3><p><strong>Surgimento:</strong> início dos anos 1990</p><p><strong>Bandas:</strong> Talk Talk, Slint, Tortoise, Mogwai.</p></div>
+        <div class="style-card"><h3>🏍️ Stoner Rock</h3><p><strong>Surgimento:</strong> início dos anos 1990</p><p><strong>Bandas:</strong> Kyuss, Sleep, Monster Magnet, Queens of the Stone Age.</p></div>
+        <div class="style-card"><h3>🌎 Britpop</h3><p><strong>Surgimento:</strong> início dos anos 1990</p><p><strong>Bandas:</strong> Oasis, Blur, Pulp, Suede.</p></div>
+        <div class="style-card"><h3>📻 Garage Rock Revival</h3><p><strong>Surgimento:</strong> fim dos anos 1990–2000</p><p><strong>Bandas:</strong> The White Stripes, The Strokes, Yeah Yeah Yeahs.</p></div>
+        <div class="style-card"><h3>🌾 Folk Rock</h3><p><strong>Surgimento:</strong> anos 1960</p><p><strong>Artistas/bandas:</strong> Bob Dylan, The Byrds, Crosby, Stills & Nash.</p></div>
+        <div class="style-card"><h3>🤠 Country Rock</h3><p><strong>Surgimento:</strong> anos 1960–1970</p><p><strong>Bandas:</strong> The Byrds, Eagles, Creedence Clearwater Revival.</p></div>
+        <div class="style-card"><h3>🌵 Southern Rock</h3><p><strong>Surgimento:</strong> fim dos anos 1960–1970</p><p><strong>Bandas:</strong> Lynyrd Skynyrd, The Allman Brothers Band, .38 Special.</p></div>
+        <div class="style-card"><h3>🏟️ Arena Rock</h3><p><strong>Surgimento:</strong> anos 1970–1980</p><p><strong>Bandas:</strong> Journey, Foreigner, Bon Jovi, REO Speedwagon.</p></div>
+        <div class="style-card"><h3>🎨 Art Rock</h3><p><strong>Surgimento:</strong> anos 1960–1970</p><p><strong>Artistas/bandas:</strong> Roxy Music, David Bowie, Talking Heads.</p></div>
+        <div class="style-card"><h3>🧪 Acid Rock</h3><p><strong>Surgimento:</strong> meados dos anos 1960</p><p><strong>Bandas:</strong> Jefferson Airplane, Blue Cheer, The 13th Floor Elevators.</p></div>
+        <div class="style-card"><h3>🕺 Funk Rock</h3><p><strong>Surgimento:</strong> anos 1960–1970</p><p><strong>Bandas:</strong> Funkadelic, Red Hot Chili Peppers, Living Colour.</p></div>
+        <div class="style-card"><h3>🎙️ Rap Rock</h3><p><strong>Surgimento:</strong> fim dos anos 1980–1990</p><p><strong>Bandas:</strong> Rage Against the Machine, Faith No More, Linkin Park.</p></div>
+        <div class="style-card"><h3>🌴 Reggae Rock</h3><p><strong>Surgimento:</strong> anos 1970 em diante</p><p><strong>Bandas:</strong> The Police, Sublime, 311.</p></div>
+        <div class="style-card"><h3>🌎 Latin Rock</h3><p><strong>Surgimento:</strong> anos 1960–1970</p><p><strong>Artistas/bandas:</strong> Santana, Maná, Los Fabulosos Cadillacs.</p></div>
+        <div class="style-card"><h3>🇧🇷 Samba Rock</h3><p><strong>Surgimento:</strong> anos 1960</p><p><strong>Artistas:</strong> Jorge Ben Jor, Trio Mocotó, Bebeto.</p></div>
+        <div class="style-card"><h3>💣 Hardcore Punk</h3><p><strong>Surgimento:</strong> início dos anos 1980</p><p><strong>Bandas:</strong> Black Flag, Bad Brains, Minor Threat, Dead Kennedys.</p></div>
+        <div class="style-card"><h3>🧮 Math Rock</h3><p><strong>Surgimento:</strong> fim dos anos 1980–1990</p><p><strong>Bandas:</strong> Don Caballero, Slint, Battles.</p></div>
+        <div class="style-card"><h3>📢 Noise Rock</h3><p><strong>Surgimento:</strong> anos 1980</p><p><strong>Bandas:</strong> Sonic Youth, Big Black, The Jesus Lizard.</p></div>
+        <div class="style-card"><h3>🌋 Doom Metal</h3><p><strong>Surgimento:</strong> anos 1970</p><p><strong>Bandas:</strong> Black Sabbath, Candlemass, Saint Vitus.</p></div>
+        <div class="style-card"><h3>☠️ Black Metal</h3><p><strong>Surgimento:</strong> anos 1980</p><p><strong>Bandas:</strong> Venom, Bathory, Mayhem.</p></div>
+        <div class="style-card"><h3>🏆 Power Metal</h3><p><strong>Surgimento:</strong> anos 1980</p><p><strong>Bandas:</strong> Helloween, Blind Guardian, Stratovarius.</p></div>
+        <div class="style-card"><h3>🎻 Metal Sinfônico</h3><p><strong>Surgimento:</strong> anos 1990</p><p><strong>Bandas:</strong> Nightwish, Epica, Within Temptation.</p></div>
+        <div class="style-card"><h3>🧠 Progressive Metal</h3><p><strong>Surgimento:</strong> anos 1980</p><p><strong>Bandas:</strong> Dream Theater, Queensrÿche, Tool.</p></div>
+        <div class="style-card"><h3>🧬 Experimental Rock</h3><p><strong>Surgimento:</strong> várias épocas</p><p><strong>Bandas:</strong> Can, King Crimson, Radiohead, Swans.</p></div>
+        <div class="style-card"><h3>🎹 Piano Rock</h3><p><strong>Surgimento:</strong> anos 1960–1970</p><p><strong>Artistas/bandas:</strong> Elton John, Billy Joel, Ben Folds Five.</p></div>
+        <div class="style-card"><h3>🇧🇷 Rock Brasileiro</h3><p><strong>Surgimento:</strong> anos 1980 em grande expansão</p><p><strong>Bandas:</strong> Legião Urbana, Titãs, Os Paralamas do Sucesso, Barão Vermelho.</p></div>
+        <div class="style-card"><h3>🎛️ Electronic Rock</h3><p><strong>Surgimento:</strong> anos 1970 em diante</p><p><strong>Bandas:</strong> Depeche Mode, New Order, Muse.</p></div>
+        <div class="style-card"><h3>🛹 Pop Punk</h3><p><strong>Surgimento:</strong> anos 1990</p><p><strong>Bandas:</strong> Green Day, Blink-182, The Offspring, Sum 41.</p></div>
+        <div class="style-card"><h3>⚙️ Alternative Metal</h3><p><strong>Surgimento:</strong> anos 1990</p><p><strong>Bandas:</strong> Tool, Helmet, Faith No More, Deftones.</p></div>
+        <div class="style-card"><h3>🏭 Industrial Metal</h3><p><strong>Surgimento:</strong> anos 1980–1990</p><p><strong>Bandas:</strong> Rammstein, Ministry, Fear Factory, Static-X.</p></div>
+        <div class="style-card"><h3>🌃 Garage Punk</h3><p><strong>Surgimento:</strong> várias ondas; destaque nos anos 1960 e 2000</p><p><strong>Bandas:</strong> The Sonics, MC5, The Hives, The Strokes.</p></div>
+    </div>
+</section>
+
+
+
+
+    <!-- =========================
+         MÁQUINA DO TEMPO
+    ========================== -->
+
+    <section id="maquina">
+
+        <button class="back" onclick="voltar()">← VOLTAR</button>
+
+        <h1 class="section-title">Máquina do Tempo</h1>
+        <p class="section-subtitle">
+            Escolha uma época e descubra o que estava bombando no rock. 🎸
+        </p>
+
+        <div class="time-machine">
+            <div class="decade-buttons">
+                <button onclick="mostrarDecada('1950')">1950s</button>
+                <button onclick="mostrarDecada('1960')">1960s</button>
+                <button onclick="mostrarDecada('1970')">1970s</button>
+                <button onclick="mostrarDecada('1980')">1980s</button>
+                <button onclick="mostrarDecada('1990')">1990s</button>
+                <button onclick="mostrarDecada('2000')">2000s</button>
+                <button onclick="mostrarDecada('2010')">2010s</button>
+            </div>
+
+            <div id="decadeDisplay" class="decade-display">
+                <div class="time-kicker">ESCOLHA UMA DÉCADA</div>
+                <h2>⏳ Para onde vamos?</h2>
+                <p>Selecione uma década para abrir o arquivo musical da RockWave.</p>
+            </div>
+        </div>
+
+        <p class="time-note">
+            * “Em destaque” significa músicas e artistas que tiveram grande presença
+            popular ou nas paradas da época — não necessariamente as músicas mais ouvidas de todo o mundo.
+        </p>
+
+    </section>
+
+
+
+
+    <section id="underground">
+        <button class="back" onclick="voltar()">← VOLTAR</button>
+        <h1 class="section-title">RockWave Underground</h1>
+        <p class="section-subtitle">Você encontrou uma área que não aparece no menu normal. 🤫</p>
+        <div class="underground-box">
+            <div class="time-kicker">ACCESS GRANTED • ROCKWAVE.EXE</div>
+            <h2>ARQUIVO SUBTERRÂNEO</h2>
+            <p class="section-subtitle">Um canto escondido da RockWave para quem gosta de procurar além do óbvio.</p>
+            <div class="underground-terminal">
+                <div>&gt; conexão estabelecida...</div>
+                <div>&gt; verificando credenciais...</div>
+                <div>&gt; <span class="red">SEGREDO DESCOBERTO</span></div>
+                <div>&gt; bem-vindo ao Underground, roqueiro.</div>
+            </div>
+            <div class="underground-code">
+                <strong>PRÓXIMO SINAL:</strong><br>
+                Procure pelo código <span class="secret-code">headbang</span>.
+            </div>
+        </div>
+    </section>
+
+    <section id="videoteca">
+        <button class="back" type="button" onclick="voltar()">← VOLTAR</button>
+        <h1 class="section-title">VIDEOTECA SECRETA</h1>
+        <p class="section-subtitle">Um arquivo escondido de riffs, refrões e clássicos do rock. 🎸</p>
+        <div class="underground-box">
+            <div class="time-kicker">ARQUIVO RESTRITO • ROCKWAVE.EXE</div>
+            <div class="secret-video-grid">
+                <article class="secret-video-card">
+                    <h2>Nirvana — Smells Like Teen Spirit</h2>
+                    <p>O sinal de 1991.</p>
+                    <iframe class="secret-video-frame" src="https://www.youtube-nocookie.com/embed/hTWKbfoikeg" title="Nirvana - Smells Like Teen Spirit" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </article>
+                <article class="secret-video-card">
+                    <h2>AC/DC — Thunderstruck</h2>
+                    <p>Um riff que acende qualquer palco.</p>
+                    <iframe class="secret-video-frame" src="https://www.youtube-nocookie.com/embed/v2AC41dglnM" title="AC/DC - Thunderstruck" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </article>
+                <article class="secret-video-card">
+                    <h2>Linkin Park — In the End</h2>
+                    <p>Rap, rock e um refrão inesquecível.</p>
+                    <iframe class="secret-video-frame" src="https://www.youtube-nocookie.com/embed/eVTXPUF4Oz4" title="Linkin Park - In the End" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </article>
+                <article class="secret-video-card">
+                    <h2>Slipknot — Psychosocial</h2>
+                    <p>Videoclipe oficial do clássico do Slipknot.</p>
+                    <iframe id="psychosocialVideo" class="secret-video-frame" data-autoplay-src="https://www.youtube-nocookie.com/embed/5abamRO41fE?autoplay=1&amp;playsinline=1" src="https://www.youtube-nocookie.com/embed/5abamRO41fE?autoplay=1&amp;playsinline=1" title="Slipknot - Psychosocial" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </article>
+                <article class="secret-video-card">
+                    <h2>System of a Down — Chop Suey!</h2>
+                    <p>Um dos maiores momentos do metal alternativo.</p>
+                    <iframe class="secret-video-frame" src="https://www.youtube-nocookie.com/embed/CSvFpBOe8eY" title="System of a Down - Chop Suey!" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </article>
+                <article class="secret-video-card">
+                    <h2>System of a Down — Toxicity</h2>
+                    <p>Crushed by the weight of the world, the knife in your back.</p>
+                    <iframe class="secret-video-frame" src="https://www.youtube-nocookie.com/embed/iywaBOMvYLI" title="System of a Down - Toxicity" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </article>
+                <article class="secret-video-card">
+                    <h2>Led Zeppelin — Stairway to Heaven</h2>
+                    <p>Uma jornada épica do rock clássico.</p>
+                    <iframe class="secret-video-frame" src="https://www.youtube-nocookie.com/embed/xbhCPt6PZIU" title="Led Zeppelin - Stairway to Heaven" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section id="curiosidades">
+        <button class="back" onclick="voltar()">← VOLTAR</button>
+        <h1 class="section-title">Rock Curiosidades</h1>
+        <p class="section-subtitle">Fatos, histórias e pequenas loucuras do mundo do rock. 🧠</p>
+        <div class="curiosity-box">
+            <div id="curiosityTag" class="curiosity-tag">VOCÊ SABIA?</div>
+            <div id="curiosityText">Clique no botão e descubra uma curiosidade.</div>
+            <button class="random-button" onclick="outraCuriosidade()">🎲 OUTRA CURIOSIDADE</button>
+        </div>
+    </section>
+
+    <section id="conquistas">
+        <button class="back" onclick="voltar()">← VOLTAR</button>
+        <h1 class="section-title">Conquistas</h1>
+        <p class="section-subtitle">Explore a RockWave e desbloqueie seu arquivo de roqueiro. 🏆</p>
+        <div class="achievement-grid">
+            <div class="achievement" id="achGuitar"><h3>🎸 Guitarrista</h3><p>Acerte 8 batidas no minigame.</p><div class="achievement-state">BLOQUEADA</div></div>
+            <div class="achievement" id="achBandQuiz"><h3>🧠 Enciclopédia do Rock</h3><p>Acerte o quiz de bandas.</p><div class="achievement-state">BLOQUEADA</div></div>
+            <div class="achievement" id="achSongGuess"><h3>🎵 Ouvido RockWave</h3><p>Acerte a música pela pista.</p><div class="achievement-state">BLOQUEADA</div></div>
+            <div class="achievement" id="achMap"><h3>🗺️ Cartógrafo do Rock</h3><p>Abra o Mapa do Rock.</p><div class="achievement-state">BLOQUEADA</div></div>
+            <div class="achievement" id="achNight"><h3>🌑 Depois da Meia-Noite</h3><p>Ative a Noite Extrema.</p><div class="achievement-state">BLOQUEADA</div></div>
+            <div class="achievement" id="achShow"><h3>🎸 Modo Show</h3><p>Ative o palco secreto da RockWave.</p><div class="achievement-state">BLOQUEADA</div></div>
+            <div class="achievement" id="achCodes"><h3>🔐 Caçador de Códigos</h3><p>Descubra um dos novos códigos secretos.</p><div class="achievement-state">BLOQUEADA</div></div>
+            <div class="achievement" id="achUnderground"><h3>🕵️ Underground</h3><p>Encontre a entrada para o arquivo subterrâneo.</p><div class="achievement-state">BLOQUEADA</div></div>
+            <div class="achievement" id="achQuiz"><h3>🎸 Primeira Onda</h3><p>Complete o quiz de estilo.</p><div class="achievement-state">BLOQUEADA</div></div>
+            <div class="achievement" id="achRadio"><h3>📻 Ouvinte</h3><p>Ligue a RockWave Radio.</p><div class="achievement-state">BLOQUEADA</div></div>
+            <div class="achievement" id="achCuriosity"><h3>🧠 Curioso</h3><p>Abra uma curiosidade.</p><div class="achievement-state">BLOQUEADA</div></div>
+            <div class="achievement" id="achTime"><h3>🕰️ Viajante do Tempo</h3><p>Visite uma década na Máquina do Tempo.</p><div class="achievement-state">BLOQUEADA</div></div>
+            <div class="achievement" id="achEgg"><h3>🕵️ Caçador de Segredos</h3><p>Encontre um Easter egg.</p><div class="achievement-state">BLOQUEADA</div></div>
+            <div class="achievement" id="achGallery"><h3>🖼️ Arquivista Visual</h3><p>Abra a Galeria RockWave.</p><div class="achievement-state">BLOQUEADA</div></div>
+            <div class="achievement" id="achGalleryFilter"><h3>🔎 Olho de Arquivista</h3><p>Use um filtro para investigar a galeria.</p><div class="achievement-state">BLOQUEADA</div></div>
+            <div class="achievement" id="achMobile"><h3>📱 RockWave no Bolso</h3><p>Acesse a RockWave em uma tela pequena.</p><div class="achievement-state">BLOQUEADA</div></div>
+            <div class="achievement" id="achExplorer"><h3>🗺️ Explorador RockWave</h3><p>Abra cinco áreas diferentes do site.</p><div class="achievement-state">BLOQUEADA</div></div>
+        </div>
+    </section>
+
+    <!-- =========================
+         EXTRAS
+    ========================== -->
+
+    <section id="extras">
+
+        <button class="back" onclick="voltar()">← VOLTAR</button>
+
+        <div class="extras">
+
+            <h1 class="section-title">Extras</h1>
+
+            <p class="section-subtitle">
+                Nem tudo na RockWave está à vista.
+            </p>
+
+            <div class="secret">
+
+                <h2>🕵️ Tem alguma coisa escondida aqui...</h2>
+
+                <br>
+
+                <p>
+                    Explore o site. Clique nas coisas.
+                    Digite coisas estranhas.
+                    Talvez você encontre alguma coisa.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <div id="easterMessage" role="dialog" aria-modal="true" aria-labelledby="easterTitle">
+        <div class="easter-card">
+            <h2 id="easterTitle">SINAL ENCONTRADO</h2>
+            <p id="easterText">Você encontrou um Easter egg da RockWave! 🤘</p>
+            <div id="easterMedia" class="easter-media"></div>
+            <p class="easter-hint">APERTE ESC PARA FECHAR</p>
+        </div>
+    </div>
+
+    
+<section id="rockmap">
+    <div class="back" onclick="voltar()">← VOLTAR</div>
+    <h1 class="section-title">MAPA DO ROCK</h1>
+    <p class="section-subtitle">Gire pelo mundo do rock: escolha uma região para descobrir as cenas que marcaram — e ainda marcam — aquele lugar. 🌍</p>
+    <div class="rock-map-box">
+        <div class="rock-map-help">🖱️ Arraste o globo para girar • clique nos pontos vermelhos para explorar cenas do rock</div>
+<div class="rock-map-controls">
+    <button type="button" onclick="resetarGloboRock()">↺ CENTRALIZAR GLOBO</button>
+    <button type="button" onclick="girarGloboRock()">⟳ GIRAR 360°</button>
+    <input id="rockMapSearch" class="rock-map-search" type="search" placeholder="🔎 Procurar país no globo..." oninput="filtrarMapaRock(this.value)" aria-label="Procurar país no globo">
+</div>
+        <div class="rock-globe-wrap" aria-label="Globo 3D ilustrativo do mundo do rock">
+            <div class="rock-globe">
+                <div class="globe-grid"></div>
+                <svg class="globe-land" viewBox="0 0 500 250" role="img" aria-label="Continentes estilizados">
+                    <path d="M44 53 L78 32 119 40 139 61 126 83 103 91 91 116 70 109 60 86 39 77 Z M119 117 L148 126 165 155 153 185 141 220 123 197 117 163 101 142 Z M215 47 L242 31 270 42 281 60 265 72 242 68 230 89 209 77 Z M245 92 L276 88 297 109 288 137 270 161 260 195 241 175 233 141 218 119 Z M300 52 L347 35 397 49 431 71 416 92 384 97 365 117 338 106 320 86 293 80 Z M357 125 L386 119 403 139 392 168 371 181 357 158 Z" fill="currentColor" opacity=".82"/>
+                </svg>
+                <button class="globe-pin" style="left:25%;top:37%" type="button" aria-label="Selecionar Estados Unidos" aria-pressed="true" onclick="selecionarRegiaoRock('eua')" title="Estados Unidos"></button>
+                <button class="globe-pin" style="left:47%;top:32%" type="button" aria-label="Selecionar Reino Unido" aria-pressed="false" onclick="selecionarRegiaoRock('reino-unido')" title="Reino Unido"></button>
+                <button class="globe-pin" style="left:34%;top:67%" type="button" aria-label="Selecionar Brasil" aria-pressed="false" onclick="selecionarRegiaoRock('brasil')" title="Brasil"></button>
+                <button class="globe-pin" style="left:53%;top:34%" type="button" aria-label="Selecionar Alemanha" aria-pressed="false" onclick="selecionarRegiaoRock('alemanha')" title="Alemanha"></button>
+                <button class="globe-pin" style="left:80%;top:69%" type="button" aria-label="Selecionar Austrália" aria-pressed="false" onclick="selecionarRegiaoRock('australia')" title="Austrália"></button>
+                <button class="globe-pin" style="left:84%;top:43%" type="button" aria-label="Selecionar Japão" aria-pressed="false" onclick="selecionarRegiaoRock('japao')" title="Japão"></button>
+                <button class="globe-pin" style="left:52%;top:27%" type="button" aria-label="Selecionar Suécia" aria-pressed="false" onclick="selecionarRegiaoRock('suecia')" title="Suécia"></button>
+                <button class="globe-pin" style="left:37%;top:61%" type="button" aria-label="Selecionar Argentina" aria-pressed="false" onclick="selecionarRegiaoRock('argentina')" title="Argentina"></button>
+                <button class="globe-pin" style="left:55%;top:48%" type="button" aria-label="Selecionar França" aria-pressed="false" onclick="selecionarRegiaoRock('franca')" title="França"></button>
+                <button class="globe-pin" style="left:70%;top:46%" type="button" aria-label="Selecionar Coreia do Sul" aria-pressed="false" onclick="selecionarRegiaoRock('coreia')" title="Coreia do Sul"></button>
+                <button class="globe-pin" style="left:31%;top:31%" type="button" aria-label="Selecionar Canadá" aria-pressed="false" onclick="selecionarRegiaoRock('canada')" title="Canadá"></button>
+                <button class="globe-pin" style="left:50%;top:54%" type="button" aria-label="Selecionar Itália" aria-pressed="false" onclick="selecionarRegiaoRock('italia')" title="Itália"></button>
+                <button class="globe-pin" style="left:48%;top:39%" type="button" aria-label="Selecionar Espanha" aria-pressed="false" onclick="selecionarRegiaoRock('espanha')" title="Espanha"></button>
+                <button class="globe-pin" style="left:29%;top:56%" type="button" aria-label="Selecionar México" aria-pressed="false" onclick="selecionarRegiaoRock('mexico')" title="México"></button>
+                <span class="globe-glow"></span>
+            </div>
+            <div class="globe-caption">● PONTOS VERMELHOS: CENAS DO ROCK • CLIQUE PARA EXPLORAR</div>
+        </div>
+        <article class="rock-region-detail" aria-live="polite">
+            <span id="rockRegionTag" class="rock-map-tag">ESTADOS UNIDOS</span>
+            <h2 id="rockRegionTitle">Seattle, Detroit e Los Angeles</h2>
+            <p id="rockRegionHistory">O grunge marcou Seattle no fim dos anos 1980 e início dos 1990; Detroit tem raízes fortes no garage rock, enquanto Los Angeles ficou ligada ao punk e ao hard rock.</p>
+            <div class="rock-region-styles"><strong>Estilos marcantes</strong><p id="rockRegionStyles">Grunge • Garage rock • Punk • Hard rock</p></div>
+            <div class="rock-region-bands"><strong>Bandas e artistas ligados à cena</strong><p id="rockRegionBands">Nirvana, Pearl Jam, Soundgarden, The Stooges, MC5, Guns N’ Roses e Red Hot Chili Peppers.</p></div>
+            <p class="rock-region-note">As cenas mudam com o tempo: isto destaca movimentos historicamente associados à região, não um ranking de popularidade atual.</p>
+        </article>
+    </div>
+</section>
+
+<section id="hall">
+    <div class="back" onclick="voltar()">← VOLTAR</div>
+    <h1 class="section-title">HALL DA FAMA</h1>
+    <p class="section-subtitle">Uma coleção de lendas, álbuns e momentos que marcaram o rock. 🏆</p>
+    <div class="hall-box">
+        <div class="hall-grid">
+            <div class="hall-card"><div class="hall-rank">01 • BANDA</div><div class="hall-name">Nirvana</div><div class="hall-meta">Grunge • Seattle</div></div>
+            <div class="hall-card"><div class="hall-rank">02 • BANDA</div><div class="hall-name">Queen</div><div class="hall-meta">Rock • Reino Unido</div></div>
+            <div class="hall-card"><div class="hall-rank">03 • BANDA</div><div class="hall-name">Black Sabbath</div><div class="hall-meta">Heavy metal • Birmingham</div></div>
+            <div class="hall-card"><div class="hall-rank">04 • BANDA</div><div class="hall-name">AC/DC</div><div class="hall-meta">Hard rock • Austrália</div></div>
+            <div class="hall-card"><div class="hall-rank">05 • BANDA</div><div class="hall-name">Linkin Park</div><div class="hall-meta">Nu metal / rock alternativo • EUA</div></div>
+            <div class="hall-card"><div class="hall-rank">06 • BANDA</div><div class="hall-name">Pink Floyd</div><div class="hall-meta">Rock progressivo • Reino Unido</div></div>
+            <div class="hall-card"><div class="hall-rank">07 • BANDA</div><div class="hall-name">Metallica</div><div class="hall-meta">Thrash metal • EUA</div></div>
+            <div class="hall-card"><div class="hall-rank">08 • BANDA</div><div class="hall-name">The Rolling Stones</div><div class="hall-meta">Rock • Reino Unido</div></div>
+                    <div class="hall-card"><div class="hall-rank">09 • BANDA</div><div class="hall-name">Led Zeppelin</div><div class="hall-meta">Hard rock • Reino Unido</div></div>
+            <div class="hall-card"><div class="hall-rank">10 • BANDA</div><div class="hall-name">The Beatles</div><div class="hall-meta">Rock • Liverpool, Reino Unido</div></div>
+            <div class="hall-card"><div class="hall-rank">11 • BANDA</div><div class="hall-name">The Who</div><div class="hall-meta">Rock • Reino Unido</div></div>
+            <div class="hall-card"><div class="hall-rank">12 • BANDA</div><div class="hall-name">The Clash</div><div class="hall-meta">Punk rock • Reino Unido</div></div>
+            <div class="hall-card"><div class="hall-rank">13 • BANDA</div><div class="hall-name">Foo Fighters</div><div class="hall-meta">Rock alternativo • EUA</div></div>
+            <div class="hall-card"><div class="hall-rank">14 • BANDA</div><div class="hall-name">Pearl Jam</div><div class="hall-meta">Grunge • Seattle</div></div>
+            <div class="hall-card"><div class="hall-rank">15 • BANDA</div><div class="hall-name">Soundgarden</div><div class="hall-meta">Grunge • Seattle</div></div>
+            <div class="hall-card"><div class="hall-rank">16 • BANDA</div><div class="hall-name">Alice in Chains</div><div class="hall-meta">Grunge / metal alternativo • Seattle</div></div>
+            <div class="hall-card"><div class="hall-rank">17 • BANDA</div><div class="hall-name">The Cure</div><div class="hall-meta">Post-punk / gothic rock • Reino Unido</div></div>
+            <div class="hall-card"><div class="hall-rank">18 • BANDA</div><div class="hall-name">Radiohead</div><div class="hall-meta">Rock alternativo • Reino Unido</div></div>
+            <div class="hall-card"><div class="hall-rank">19 • BANDA</div><div class="hall-name">The Strokes</div><div class="hall-meta">Indie rock • Nova York</div></div>
+            <div class="hall-card"><div class="hall-rank">20 • BANDA</div><div class="hall-name">Rage Against the Machine</div><div class="hall-meta">Rap metal • EUA</div></div>
+            <div class="hall-card"><div class="hall-rank">21 • BANDA</div><div class="hall-name">Red Hot Chili Peppers</div><div class="hall-meta">Funk rock • Califórnia</div></div>
+            <div class="hall-card"><div class="hall-rank">22 • BANDA</div><div class="hall-name">Iron Maiden</div><div class="hall-meta">Heavy metal • Reino Unido</div></div>
+            <div class="hall-card"><div class="hall-rank">23 • BANDA</div><div class="hall-name">Judas Priest</div><div class="hall-meta">Heavy metal • Reino Unido</div></div>
+            <div class="hall-card"><div class="hall-rank">24 • BANDA</div><div class="hall-name">Guns N’ Roses</div><div class="hall-meta">Hard rock • Los Angeles</div></div>
+            <div class="hall-card"><div class="hall-rank">25 • BANDA</div><div class="hall-name">The Doors</div><div class="hall-meta">Rock psicodélico • Los Angeles</div></div>
+            <div class="hall-card"><div class="hall-rank">26 • BANDA</div><div class="hall-name">The Jimi Hendrix Experience</div><div class="hall-meta">Rock psicodélico • EUA/Reino Unido</div></div>
+            <div class="hall-card"><div class="hall-rank">27 • BANDA</div><div class="hall-name">Legião Urbana</div><div class="hall-meta">Rock brasileiro • Brasília</div></div>
+            <div class="hall-card"><div class="hall-rank">28 • BANDA</div><div class="hall-name">Titãs</div><div class="hall-meta">Rock brasileiro • São Paulo</div></div>
+            <div class="hall-card"><div class="hall-rank">29 • BANDA</div><div class="hall-name">Os Paralamas do Sucesso</div><div class="hall-meta">Rock brasileiro • Rio de Janeiro</div></div>
+            <div class="hall-card"><div class="hall-rank">30 • BANDA</div><div class="hall-name">Charlie Brown Jr.</div><div class="hall-meta">Rock brasileiro • Santos</div></div>
+        <div class="hall-card"><div class="hall-rank">31 • BANDA</div><div class="hall-name">Kiss</div><div class="hall-meta">Hard rock • Nova York</div><span class="hall-era">ANOS 70 →</span></div>
+        <div class="hall-card"><div class="hall-rank">32 • BANDA</div><div class="hall-name">Deep Purple</div><div class="hall-meta">Hard rock • Reino Unido</div><span class="hall-era">ANOS 60 →</span></div>
+        <div class="hall-card"><div class="hall-rank">33 • BANDA</div><div class="hall-name">Ramones</div><div class="hall-meta">Punk rock • Nova York</div><span class="hall-era">ANOS 70 →</span></div>
+        <div class="hall-card"><div class="hall-rank">34 • BANDA</div><div class="hall-name">System Of A Down</div><div class="hall-meta">Alternative metal • Califórnia</div><span class="hall-era">ANOS 90 →</span></div>
+        <div class="hall-card"><div class="hall-rank">35 • BANDA</div><div class="hall-name">Slipknot</div><div class="hall-meta">Metal • Iowa</div><span class="hall-era">ANOS 90 →</span></div>
+        <div class="hall-card"><div class="hall-rank">36 • BANDA</div><div class="hall-name">Evanescence</div><div class="hall-meta">Alternative metal • Arkansas</div><span class="hall-era">ANOS 90 →</span></div>
+        <div class="hall-card"><div class="hall-rank">37 • BANDA</div><div class="hall-name">Green Day</div><div class="hall-meta">Punk rock • Califórnia</div><span class="hall-era">ANOS 90 →</span></div>
+        <div class="hall-card"><div class="hall-rank">38 • BANDA</div><div class="hall-name">The Cranberries</div><div class="hall-meta">Alternative rock • Irlanda</div><span class="hall-era">ANOS 90 →</span></div>
+        <div class="hall-card"><div class="hall-rank">39 • BANDA</div><div class="hall-name">Arctic Monkeys</div><div class="hall-meta">Indie rock • Sheffield</div><span class="hall-era">ANOS 2000 →</span></div>
+        <div class="hall-card"><div class="hall-rank">40 • ARTISTA</div><div class="hall-name">Pitty</div><div class="hall-meta">Rock brasileiro • Bahia</div><span class="hall-era">ANOS 2000 →</span></div>
+    </div>
+</section>
+
+<section id="createband">
+    <div class="back" onclick="voltar()">← VOLTAR</div>
+    <h1 class="section-title">MONTE SUA BANDA</h1>
+    <p class="section-subtitle">Escolha os integrantes, o estilo e dê um nome para sua própria banda. 🤘</p>
+    <div class="band-builder">
+        <div class="band-builder-card">
+            <div class="band-builder-form">
+                <label>Nome da banda<input id="bandName" maxlength="30" placeholder="Ex.: Black Wolves"></label>
+                <label>Estilo<select id="bandStyle"><option>Grunge</option><option>Hard rock</option><option>Heavy metal</option><option>Rock alternativo</option><option>Punk rock</option><option>Rock clássico</option><option>Nu metal</option></select></label>
+                <label>Vocalista<input id="bandSinger" maxlength="25" placeholder="Seu vocalista"></label>
+                <label>Guitarrista<input id="bandGuitar" maxlength="25" placeholder="Seu guitarrista"></label>
+                <label>Baixista<input id="bandBass" maxlength="25" placeholder="Seu baixista"></label>
+                <label>Baterista<input id="bandDrums" maxlength="25" placeholder="Seu baterista"></label>
+            </div>
+            <div class="band-builder-actions">
+                <button type="button" onclick="criarMinhaBanda()">CRIAR BANDA 🤘</button>
+                <button type="button" onclick="gerarBanda()">GERAR UMA BANDA</button>
+            </div>
+            <div id="bandResult" class="band-result"></div>
+        </div>
+    </div>
+</section>
+
+
+<section id="batalha">
+    <button class="back" onclick="voltar()">← VOLTAR</button>
+    <h1 class="section-title">COPA ROCKWAVE</h1>
+    <p class="section-subtitle">Mata-mata de bandas. Quem vencer avança. Quem perder está eliminado da edição de 2026. ⚔️🤘</p>
+
+    <div class="battle-box">
+        <div class="battle-tournament-head">
+            <div>
+                <span id="battleRoundTag" class="rock-map-tag">DEZESSEIS AVOS DE FINAL</span>
+                <h2 id="battleRoundTitle">O campeonato vai começar</h2>
+                <p id="battleMatchInfo">Escolha uma banda para fazê-la avançar.</p>
+            </div>
+            <div class="battle-edition">EDIÇÃO <strong>2026</strong></div>
+        </div>
+
+        <div class="battle-arena">
+            <button id="battleLeft" class="battle-card" type="button">
+                <span class="rock-map-tag">DESAFIANTE A</span>
+                <h2>—</h2>
+                <p>—</p>
+            </button>
+            <div class="battle-vs">VS</div>
+            <button id="battleRight" class="battle-card" type="button">
+                <span class="rock-map-tag">DESAFIANTE B</span>
+                <h2>—</h2>
+                <p>—</p>
+            </button>
+        </div>
+
+        <div id="battleResult" class="battle-result" aria-live="polite"></div>
+
+        <div class="battle-bracket">
+            <div class="battle-bracket-title">CAMINHO ATÉ A FINAL</div>
+            <div id="battleBracket" class="battle-bracket-grid"></div>
+        </div>
+
+        <div class="battle-actions">
+            <button id="battleNew" type="button">↻ NOVO CAMPEONATO 2026</button>
+        </div>
+    </div>
+</section>
+
+<footer>
+        ROCKWAVE — O som ainda não morreu. 🎸
+    </footer>
+<script>
+
+        /* =========================
+           CONQUISTAS — SISTEMA
+        ========================== */
+        const rockwaveConquistas = [
+            "achGuitar","achBandQuiz","achSongGuess","achMap","achNight","achShow",
+            "achCodes","achUnderground","achQuiz","achRadio","achCuriosity","achTime",
+            "achEgg","achGallery","achGalleryFilter","achMobile","achExplorer"
+        ];
+
+        function carregarConquistas(){
+            let salvas = {};
+            try {
+                salvas = JSON.parse(localStorage.getItem("rockwave_conquistas") || "{}") || {};
+            } catch(e) {}
+
+            rockwaveConquistas.forEach(id => {
+                const el = document.getElementById(id);
+                if(!el) return;
+                const desbloqueada = salvas[id] === true;
+                el.classList.toggle("unlocked", desbloqueada);
+                const estado = el.querySelector(".achievement-state");
+                if(estado) estado.textContent = desbloqueada ? "DESBLOQUEADA ✓" : "BLOQUEADA";
+            });
+        }
+
+        function desbloquear(id){
+            if(!rockwaveConquistas.includes(id)) return;
+            let salvas = {};
+            try {
+                salvas = JSON.parse(localStorage.getItem("rockwave_conquistas") || "{}") || {};
+            } catch(e) {}
+
+            if(salvas[id] === true){
+                carregarConquistas();
+                return;
+            }
+
+            salvas[id] = true;
+            try {
+                localStorage.setItem("rockwave_conquistas", JSON.stringify(salvas));
+            } catch(e) {}
+
+            const el = document.getElementById(id);
+            if(el){
+                el.classList.add("unlocked");
+                const estado = el.querySelector(".achievement-state");
+                if(estado) estado.textContent = "DESBLOQUEADA ✓";
+            }
+        }
+
+        function resetarConquistas(){
+            try { localStorage.removeItem("rockwave_conquistas"); } catch(e) {}
+            carregarConquistas();
+        }
+
+        /* =========================
+           NAVEGAÇÃO
+        ========================== */
+
+        const rwVisitedSections = new Set();
+        function registrarExploracao(id){if(!id||id==="home")return;rwVisitedSections.add(id);if(rwVisitedSections.size>=5)desbloquear("achExplorer");}
+        function filtrarGaleria(filtro,botao){
+            document.querySelectorAll(".gallery-filter").forEach(btn=>btn.classList.remove("active"));
+            if(botao)botao.classList.add("active");
+            document.querySelectorAll(".gallery-card").forEach(card=>card.classList.toggle("hidden",filtro!=="todos"&&card.dataset.category!==filtro));
+            desbloquear("achGalleryFilter");
+        }
+
+        function abrir(id) {
+            const alvo = document.getElementById(id);
+            if (!alvo) {
+                console.warn("Seção RockWave não encontrada:", id);
+                return;
+            }
+
+            document.getElementById("home").style.display = "none";
+            document.querySelectorAll("section").forEach(section => {
+                section.classList.remove("active");
+            });
+
+            const psychosocialVideo = document.getElementById("psychosocialVideo");
+            if (psychosocialVideo) {
+                if (id === "videoteca") {
+                    psychosocialVideo.src = psychosocialVideo.dataset.autoplaySrc;
+                } else {
+                    psychosocialVideo.removeAttribute("src");
+                }
+            }
+
+            alvo.classList.add("active");
+            registrarExploracao(id);
+
+            if (id === "galeria") desbloquear("achGallery");
+            if (id === "rockmap") desbloquear("achMap");
+
+            window.scrollTo({top:0, behavior:"smooth"});
+        }
+
+
+        function voltar() {
+            document.getElementById("psychosocialVideo")?.removeAttribute("src");
+document.querySelectorAll("section").forEach(section => {
+                section.classList.remove("active");
+            });
+
+            document.getElementById("home").style.display = "flex";
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+        /* =========================
+           QUIZ — 50 RESULTADOS
+        ========================== */
+        const quizScores = {};
+        const quizQuestions = document.querySelectorAll(".quiz-question");
+        let quizCurrent = 0;
+
+        function iniciarQuiz() {
+            Object.keys(quizScores).forEach(k => delete quizScores[k]);
+            quizCurrent = 0;
+            quizQuestions.forEach((q,i) => q.classList.toggle("active", i === 0));
+            document.getElementById("quizResult").classList.remove("show");
+            document.getElementById("quizProgress").textContent = "PERGUNTA 1 DE 10";
+        }
+
+        function responder(numero, estilo) {
+            quizScores[estilo] = (quizScores[estilo] || 0) + 1;
+            quizCurrent = numero + 1;
+
+            if (quizCurrent < quizQuestions.length) {
+                quizQuestions.forEach((q,i) => q.classList.toggle("active", i === quizCurrent));
+                document.getElementById("quizProgress").textContent =
+                    "PERGUNTA " + (quizCurrent + 1) + " DE 10";
+            } else {
+                mostrarResultado();
+            }
+        }
+
+        function mostrarResultado() {
+            quizQuestions.forEach(q => q.classList.remove("active"));
+            document.getElementById("quizProgress").textContent = "RESULTADO FINAL";
+
+            const vencedor = Object.entries(quizScores)
+                .sort((a,b) => b[1] - a[1])[0][0];
+
+            const frases = {
+                "Rock and Roll":"Você curte a raiz que colocou o rock no mapa. Riff, atitude e energia pura!",
+                "Heavy Metal":"Peso, potência e guitarras no talo. O amplificador já pediu socorro.",
+                "Punk Rock":"Velocidade, atitude e zero paciência para enrolação. 🤘",
+                "Grunge":"Distorção, melodia e aquela energia crua que não precisa pedir licença.",
+                "Progressive Rock":"Você gosta de viajar na música e não tem medo de uma música de 12 minutos.",
+                "Black Metal":"Atmosfera extrema, intensidade e uma sonoridade sombria.",
+                "Indie Rock":"Você procura personalidade e sons que fogem do caminho óbvio.",
+                "New Wave":"Você gosta quando o rock encontra sintetizadores, estilo e experimentação.",
+                "Nu Metal":"Peso moderno, groove e misturas que não respeitam fronteiras.",
+                "Samba Rock":"O rock encontrou o balanço brasileiro — e ninguém saiu ileso. 🇧🇷"
+            };
+
+            document.getElementById("resultGenre").textContent = vencedor + " 🤘";
+            document.getElementById("resultText").textContent =
+                frases[vencedor] || "Essa é a sua onda na RockWave. Agora aumente o volume e descubra mais desse estilo!";
+            document.getElementById("quizResult").classList.add("show");
+desbloquear("achQuiz");
+        }
+
+        function reiniciarQuiz() {
+            iniciarQuiz();
+            carregarConquistas();
+            window.scrollTo({top:0, behavior:"smooth"});
+        }
+
+        iniciarQuiz();
+        carregarConquistas();
+
+        if(window.innerWidth<=650) desbloquear("achMobile");
+        window.addEventListener("resize",function(){if(window.innerWidth<=650)desbloquear("achMobile");});
+
+
+        /* =========================
+           ROCKWAVE RADIO — STREAM REAL 24/7
+        ========================== */
+
+        const ROCKWAVE_STREAM = "https://eu8.fastcast4u.com/proxy/rock/stream";
+
+        let radioLigada = false;
+        let radioHistorico = [];
+
+        function atualizarRadio() {
+            const title = document.getElementById("radioTitle");
+            const status = document.getElementById("radioStatus");
+            const fill = document.getElementById("radioProgressFill");
+            const meta = document.getElementById("radioMeta");
+            const now = document.getElementById("radioNowPlaying");
+            const audio = document.getElementById("rockwaveAudio");
+
+            if (title) title.textContent = "RockWave Radio";
+
+            if (now) {
+                now.textContent = radioLigada
+                    ? "▶ TRANSMITINDO AO VIVO"
+                    : "PRONTO PARA TOCAR";
+            }
+
+            if (status) {
+                status.textContent = radioLigada
+                    ? "RockWave Radio • stream ao vivo"
+                    : "RockWave Radio • pausada";
+            }
+
+            if (fill) fill.style.width = radioLigada ? "100%" : "0%";
+
+            if (meta) meta.textContent = "STREAM AO VIVO • 24/7 ROCK";
+
+            if (audio) {
+                const label = document.getElementById("radioVolumeLabel");
+                if (label) {
+                    label.textContent = "Volume " + Math.round(audio.volume * 100) + "%";
+                }
+            }
+        }
+
+
+        let radioReconectando = false;
+        let radioReconexaoTimer = null;
+
+        function reconectarRadio() {
+            const audio = document.getElementById("rockwaveAudio");
+            if (!audio || !radioLigada || radioReconectando) return;
+
+            radioReconectando = true;
+            const status = document.getElementById("radioStatus");
+            if (status) status.textContent = "Conexão perdida. Reconectando...";
+
+            clearTimeout(radioReconexaoTimer);
+            radioReconexaoTimer = setTimeout(() => {
+                if (!radioLigada) {
+                    radioReconectando = false;
+                    return;
+                }
+
+                const volume = audio.volume;
+
+                audio.removeAttribute("src");
+                audio.load();
+                audio.src = ROCKWAVE_STREAM;
+                audio.volume = volume;
+
+                audio.play()
+                    .catch(() => {})
+                    .finally(() => {
+                        radioReconectando = false;
+                    });
+            }, 4000);
+        }
+
+        function ligarRadio() {
+            const audio = document.getElementById("rockwaveAudio");
+            if (!audio) return;
+
+            audio.src = ROCKWAVE_STREAM;
+
+            audio.play().then(() => {
+                radioLigada = true;
+                desbloquear("achRadio");
+                atualizarRadio();
+            }).catch(() => {
+                radioLigada = false;
+                atualizarRadio();
+
+                const status = document.getElementById("radioStatus");
+                if (status) {
+                    status.textContent =
+                        "Clique em TOCAR RÁDIO novamente para iniciar o stream.";
+                }
+            });
+        }
+
+        function pausarRadio() {
+            const audio = document.getElementById("rockwaveAudio");
+            if (!audio) return;
+
+            audio.pause();
+            radioLigada = false;
+            atualizarRadio();
+        }
+
+        function alterarVolumeRadio(valor) {
+            const audio = document.getElementById("rockwaveAudio");
+            const volume = Math.max(0, Math.min(100, Number(valor))) / 100;
+
+            if (audio) audio.volume = volume;
+
+            const label = document.getElementById("radioVolumeLabel");
+            if (label) {
+                label.textContent = "Volume " + Math.round(volume * 100) + "%";
+            }
+        }
+
+        function criarMinhaBanda(){
+    const nome=document.getElementById("bandName").value.trim()||"Minha Banda";
+    const estilo=document.getElementById("bandStyle").value;
+    const vocal=document.getElementById("bandSinger").value.trim()||"Vocalista misterioso";
+    const guitarra=document.getElementById("bandGuitar").value.trim()||"Guitarrista rebelde";
+    const baixo=document.getElementById("bandBass").value.trim()||"Baixista sombrio";
+    const bateria=document.getElementById("bandDrums").value.trim()||"Baterista insano";
+    mostrarBanda(nome,estilo,vocal,guitarra,baixo,bateria);
+    try{localStorage.setItem("rw_band",JSON.stringify({nome,estilo,vocal,guitarra,baixo,bateria}));}catch(e){}
+
+}
+function gerarBanda(){
+    const pick=a=>a[Math.floor(Math.random()*a.length)];
+    document.getElementById("bandName").value=pick(rwBandNames);
+    document.getElementById("bandStyle").value=pick(rwBandStyles);
+    document.getElementById("bandSinger").value=pick(rwMembers);
+    document.getElementById("bandGuitar").value=pick(rwMembers);
+    document.getElementById("bandBass").value=pick(rwMembers);
+    document.getElementById("bandDrums").value=pick(rwMembers);
+    criarMinhaBanda();
+}
+
+
+</script>
+
+
+
+<section id="doacao">
+    <div class="back" onclick="voltar()">← VOLTAR</div>
+    <h1 class="section-title">APOIE O ROCKWAVE</h1>
+    <p class="section-subtitle">Se quiser apoiar o desenvolvimento do site, você pode contribuir via PIX.</p>
+    <div class="donation-box">
+        <h2>❤️ VALEU POR FORTALECER O ROCK</h2>
+        <p>Qualquer contribuição é opcional e ajuda a manter o RockWave sendo atualizado e cheio de novas ideias.</p>
+        <div class="pix-key" style="margin-top:24px;padding:20px;background:#111;border:1px solid #444;overflow-wrap:anywhere;">
+            <p style="color:#aaa;margin-bottom:12px;">CHAVE PIX ALEATÓRIA</p>
+            <strong id="rockwavePixKey" style="font-size:clamp(16px,3vw,22px);">1ef4cf7a-6513-408b-876e-65e3f846e1f3</strong>
+            <br>
+            <button type="button" onclick="copiarPixRockWave()" style="margin-top:18px;background:#300000;color:#fff;border:1px solid #a00000;padding:13px 18px;cursor:pointer;font-weight:bold;">📋 COPIAR CHAVE PIX</button>
+            <p id="pixCopyStatus" class="pix-status" aria-live="polite" style="margin-top:12px;">Copie a chave para fazer sua contribuição.</p>
+        </div>
+</div>
+</section>
+
+<script>
+function copiarPixRockWave(){
+    const chave=document.getElementById("rockwavePixKey").textContent.trim();
+    const status=document.getElementById("pixCopyStatus");
+    if(navigator.clipboard && window.isSecureContext){
+        navigator.clipboard.writeText(chave).then(()=>{
+            status.textContent="Chave PIX copiada! 🤘";
+        }).catch(()=>{
+            status.textContent="Não foi possível copiar automaticamente. Selecione e copie a chave acima.";
+        });
+    }else{
+        status.textContent="Selecione e copie a chave acima.";
+    }
+}
+
+        function resetarGloboRock(){
+            const globe=document.querySelector(".rock-globe");
+            if(!globe)return;
+            globe.style.setProperty("--globe-x","7deg");
+            globe.style.setProperty("--globe-y","0deg");
+            globe.classList.remove("dragging");
+        }
+        function girarGloboRock(){
+            const globe=document.querySelector(".rock-globe");
+            if(!globe)return;
+            globe.animate([
+                {transform:"rotateX(7deg) rotateY(0deg)"},
+                {transform:"rotateX(7deg) rotateY(360deg)"}
+            ],{duration:1600,easing:"cubic-bezier(.2,.8,.2,1)"});
+            setTimeout(resetarGloboRock,1650);
+        }
+        function filtrarMapaRock(termo){
+            const normalizar=texto=>texto.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+            const q=normalizar((termo||"").trim());
+            document.querySelectorAll(".globe-pin").forEach(pin=>{
+                const label=normalizar(pin.title+" "+pin.getAttribute("aria-label"));
+                pin.hidden=!!q&&!label.includes(q);
+            });
+        }
+
+/* =========================
+   MAPA DO ROCK — DADOS E INTERAÇÃO
+========================= */
+const regioesRockWave={
+ eua:{tag:"ESTADOS UNIDOS",titulo:"Seattle, Detroit e Los Angeles",historia:"O grunge marcou Seattle; Detroit tem raízes fortes no garage rock; Los Angeles ficou ligada ao punk e ao hard rock.",estilos:"Grunge • Garage rock • Punk • Hard rock",bandas:"Nirvana, Pearl Jam, Soundgarden, The Stooges, MC5 e Guns N’ Roses."},
+ "reino-unido":{tag:"REINO UNIDO",titulo:"Londres, Liverpool e Manchester",historia:"O Reino Unido foi central para a British Invasion, o punk, a new wave, o indie e o britpop.",estilos:"Rock clássico • Punk • New wave • Britpop • Indie",bandas:"The Beatles, The Rolling Stones, The Clash, The Cure, Oasis e Joy Division."},
+ brasil:{tag:"BRASIL",titulo:"Brasília, São Paulo, Rio e além",historia:"O rock brasileiro ganhou grande projeção nos anos 1980 e seguiu diverso entre punk, alternativo, metal e misturas locais.",estilos:"Rock brasileiro • Punk • Alternativo • Metal • Manguebeat",bandas:"Legião Urbana, Titãs, Sepultura, Raimundos, Pitty e Charlie Brown Jr."},
+ alemanha:{tag:"ALEMANHA",titulo:"Düsseldorf, Berlim e Frankfurt",historia:"A Alemanha passou pelo krautrock experimental e por cenas importantes de metal e rock industrial.",estilos:"Krautrock • Metal • Industrial rock",bandas:"Kraftwerk, Can, Scorpions, Rammstein e Helloween."},
+ australia:{tag:"AUSTRÁLIA",titulo:"Sydney, Melbourne e Perth",historia:"A cena australiana combina hard rock de arena, punk e rock alternativo.",estilos:"Hard rock • Punk • Alternativo",bandas:"AC/DC, INXS, Silverchair, Midnight Oil e Tame Impala."},
+ japao:{tag:"JAPÃO",titulo:"Tóquio e Osaka",historia:"O Japão desenvolveu cenas próprias de rock, punk, metal, visual kei e alternative rock.",estilos:"J-rock • Punk • Metal • Visual kei",bandas:"X Japan, B’z, One Ok Rock, Babymetal e Dir en grey."},
+ suecia:{tag:"SUÉCIA",titulo:"Estocolmo e Gotemburgo",historia:"A Suécia construiu cenas importantes de metal, punk e rock alternativo com alcance internacional.",estilos:"Death metal melódico • Hard rock • Punk • Alternativo",bandas:"Europe, In Flames, Opeth, Refused e The Hives."},
+ argentina:{tag:"ARGENTINA",titulo:"Buenos Aires e La Plata",historia:"O rock argentino se tornou uma das cenas mais influentes da América Latina, com identidade própria desde os anos 1960.",estilos:"Rock nacional • Hard rock • Alternativo • Punk",bandas:"Soda Stereo, Charly García, Spinetta, Los Redondos e Riff."},
+ franca:{tag:"FRANÇA",titulo:"Paris e Lyon",historia:"A França desenvolveu cenas de rock progressivo, punk, pós-punk, alternativo e metal.",estilos:"Progressivo • Punk • Alternativo • Metal",bandas:"Téléphone, Trust, Phoenix, Gojira e Noir Désir."},
+ coreia:{tag:"COREIA DO SUL",titulo:"Seul e Busan",historia:"A Coreia do Sul possui uma cena que vai do indie e punk ao metal, sustentada por clubes e festivais.",estilos:"Indie rock • Punk • Metal • Alternative",bandas:"Seo Taiji and Boys, Jaurim, Nell, YB e Day6."},
+ canada:{tag:"CANADÁ",titulo:"Toronto, Vancouver e Montreal",historia:"O Canadá reúne cenas fortes de rock alternativo, punk, indie e metal.",estilos:"Indie • Punk • Alternative • Metal",bandas:"Rush, Arcade Fire, Billy Talent, Nickelback e Danko Jones."},
+ italia:{tag:"ITÁLIA",titulo:"Milão, Roma e Bolonha",historia:"A Itália desenvolveu cenas de rock progressivo, hard rock, punk e rock alternativo.",estilos:"Progressivo • Hard rock • Punk • Alternativo",bandas:"Goblin, Litfiba, Måneskin, Lacuna Coil e Afterhours."},
+ espanha:{tag:"ESPANHA",titulo:"Madri, Barcelona e Bilbao",historia:"O rock espanhol reúne rock urbano, punk, indie e metal em cenas locais muito diferentes.",estilos:"Rock urbano • Punk • Indie • Metal",bandas:"Héroes del Silencio, Extremoduro, Ska-P, Barón Rojo e MClan."},
+ mexico:{tag:"MÉXICO",titulo:"Cidade do México e Monterrey",historia:"O México construiu uma grande cena de rock latino, alternativo, punk e metal.",estilos:"Rock latino • Alternativo • Punk • Metal",bandas:"Caifanes, Café Tacvba, Molotov, Maná e Zoé."}
+};
+function selecionarRegiaoRock(id){
+ const r=regioesRockWave[id]||regioesRockWave.eua;
+ const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+ set("rockRegionTag",r.tag);set("rockRegionTitle",r.titulo);set("rockRegionHistory",r.historia);set("rockRegionStyles",r.estilos);set("rockRegionBands",r.bandas);
+ document.querySelectorAll(".globe-pin").forEach(b=>b.setAttribute("aria-pressed",b.getAttribute("onclick")===("selecionarRegiaoRock('"+id+"')")?"true":"false"));
+ if(typeof desbloquear==="function")desbloquear("achMap");
+}
+
+        /* =========================
+           GLOBO DO MAPA — ARRASTAR PARA GIRAR
+        ========================== */
+        (() => {
+            const globe = document.querySelector(".rock-globe");
+            if (!globe) return;
+
+            let dragging = false;
+            let startX = 0;
+            let startY = 0;
+            let rotX = 7;
+            let rotY = 0;
+
+            function setRotation() {
+                globe.style.setProperty("--globe-x", rotX + "deg");
+                globe.style.setProperty("--globe-y", rotY + "deg");
+            }
+
+            globe.addEventListener("pointerdown", (event) => {
+                if (event.target.closest(".globe-pin")) return;
+                dragging = true;
+                startX = event.clientX;
+                startY = event.clientY;
+                globe.classList.add("dragging");
+                globe.setPointerCapture(event.pointerId);
+            });
+
+            globe.addEventListener("pointermove", (event) => {
+                if (!dragging) return;
+                rotY += (event.clientX - startX) * 0.45;
+                rotX -= (event.clientY - startY) * 0.25;
+                rotX = Math.max(-35, Math.min(35, rotX));
+                startX = event.clientX;
+                startY = event.clientY;
+                setRotation();
+            });
+
+            function stopDrag(event) {
+                if (!dragging) return;
+                dragging = false;
+                globe.classList.remove("dragging");
+                try { globe.releasePointerCapture(event.pointerId); } catch (e) {}
+            }
+
+            globe.addEventListener("pointerup", stopDrag);
+            globe.addEventListener("pointercancel", stopDrag);
+            setRotation();
+        })();
+
+/* =========================
+   ROCK CURIOSIDADES — SEM REPETIÇÃO
+========================= */
+const rockCuriosidades = [
+    ["Nirvana","O álbum Nevermind ajudou a levar o grunge de Seattle ao grande público no início dos anos 1990."],
+    ["AC/DC","Back in Black foi lançado em 1980 e se tornou um dos álbuns de rock mais vendidos da história."],
+    ["Black Sabbath","A banda é frequentemente apontada como uma das principais criadoras do heavy metal."],
+    ["Guns N’ Roses","Sweet Child o’ Mine surgiu a partir de um riff que Slash estava tocando durante um ensaio."],
+    ["Queen","Bohemian Rhapsody mistura várias seções musicais em uma única faixa, fugindo bastante do formato pop tradicional."],
+    ["Pink Floyd","The Dark Side of the Moon permaneceu por décadas entre os álbuns mais longevos das paradas da Billboard."],
+    ["The Beatles","A última apresentação paga dos Beatles aconteceu no Candlestick Park, em San Francisco, em 1966."],
+    ["Led Zeppelin","O quarto álbum da banda não traz o nome Led Zeppelin na capa: ele é conhecido por vários apelidos, incluindo Led Zeppelin IV."],
+    ["Deep Purple","Smoke on the Water foi inspirada por um incêndio no cassino de Montreux, na Suíça, em 1971."],
+    ["Metallica","Master of Puppets foi o primeiro álbum do Metallica a receber certificação de platina nos Estados Unidos."],
+    ["Iron Maiden","O mascote Eddie aparece em capas de álbuns, singles e shows da banda desde os primeiros anos."],
+    ["The Cure","Robert Smith é conhecido por seu visual marcante, que se tornou parte da identidade visual do The Cure."],
+    ["The Clash","London Calling mistura punk com elementos de reggae, ska, rockabilly e outros estilos."],
+    ["Ramones","Os integrantes originais adotaram o sobrenome artístico Ramone, mesmo sem serem parentes."],
+    ["Green Day","Dookie foi o álbum que colocou o Green Day definitivamente no centro do punk rock mainstream nos anos 1990."],
+    ["Red Hot Chili Peppers","A banda incorporou elementos de funk ao rock e ajudou a popularizar essa mistura em grande escala."],
+    ["Rage Against the Machine","A banda ficou conhecida por combinar riffs de rock pesado com influências de hip-hop e letras políticas."],
+    ["Linkin Park","Hybrid Theory foi o álbum de estreia do Linkin Park e se tornou um enorme sucesso comercial."],
+    ["System Of A Down","A música da banda combina metal com influências de rock alternativo, música armênia e outras sonoridades."],
+    ["Slipknot","Os integrantes do Slipknot são associados a máscaras e personagens visuais que mudaram ao longo das eras da banda."],
+    ["Evanescence","Fallen foi o álbum que apresentou o Evanescence a uma enorme audiência internacional em 2003."],
+    ["Arctic Monkeys","Whatever People Say I Am, That’s What I’m Not foi lançado em 2006 como o álbum de estreia da banda."],
+    ["Legião Urbana","Faroeste Caboclo é uma das músicas mais conhecidas da banda e conta uma longa história em formato narrativo."],
+    ["Charlie Brown Jr.","A banda ficou conhecida por misturar rock com elementos de skate punk, rap e reggae."],
+    ["Pitty","Admirável Chip Novo foi o álbum de estreia de Pitty e marcou a cena do rock brasileiro nos anos 2000."],
+    ["Mamonas Assassinas","O único álbum de estúdio da banda, lançado em 1995, tornou-se um fenômeno de vendas no Brasil."],
+    ["Kiss","A maquiagem e os personagens de palco do Kiss ajudaram a transformar os shows da banda em um espetáculo visual."],
+    ["Ozzy Osbourne","Depois de sair do Black Sabbath, Ozzy construiu uma longa carreira solo com vários álbuns de sucesso."],
+    ["The Cranberries","Zombie foi escrita por Dolores O’Riordan como reação à violência associada ao conflito na Irlanda do Norte."],
+    ["Foo Fighters","Dave Grohl gravou praticamente todos os instrumentos do primeiro álbum do Foo Fighters, lançado em 1995."]
+];
+
+let rockCuriosidadesRestantes = [];
+
+function embaralharCuriosidades(lista){
+    const arr = [...lista];
+    for(let i = arr.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function resetarCuriosidades(){
+    rockCuriosidadesRestantes = embaralharCuriosidades(rockCuriosidades);
+}
+
+function outraCuriosidade(){
+    const texto = document.getElementById("curiosityText");
+    const tag = document.getElementById("curiosityTag");
+    if(!texto || !tag) return;
+
+    if(!rockCuriosidadesRestantes.length){
+        resetarCuriosidades();
+        texto.textContent = "Você zerou o arquivo de curiosidades! 🔥 Todas foram vistas. A coleção foi embaralhada para começar uma nova rodada.";
+        tag.textContent = "ARQUIVO COMPLETO";
+        if(typeof desbloquear === "function") desbloquear("achCuriosity");
+        return;
+    }
+
+    const curiosidade = rockCuriosidadesRestantes.pop();
+    tag.textContent = curiosidade[0].toUpperCase();
+    texto.textContent = curiosidade[1];
+    if(typeof desbloquear === "function") desbloquear("achCuriosity");
+}
+
+resetarCuriosidades();
+
+/* =========================
+   ADIVINHE A MÚSICA
+========================= */
+const perguntasMusicaRockWave = [
+    ["Faixa do The White Stripes conhecida por um riff de guitarra que lembra uma linha de baixo.",["Seven Nation Army","Smells Like Teen Spirit","Back In Black","Enter Sandman"],"Seven Nation Army"],
+    ["Single do Nirvana que abriu o álbum Nevermind e virou um dos hinos do grunge.",["Come As You Are","Smells Like Teen Spirit","Lithium","In the End"],"Smells Like Teen Spirit"],
+    ["Sucesso do Queen que combina balada, ópera e hard rock em uma única faixa.",["Bohemian Rhapsody","Imagine","Dream On","Stairway to Heaven"],"Bohemian Rhapsody"],
+    ["Clássico do Queen marcado por uma batida de palmas e pisadas feita para o público acompanhar.",["We Are the Champions","Rock You","Another One Bites the Dust","We Will Rock You"],"We Will Rock You"],
+    ["Faixa do AC/DC que dá nome ao álbum lançado em 1980, o primeiro com Brian Johnson nos vocais.",["Highway to Hell","Back In Black","Thunderstruck","T.N.T."],"Back In Black"],
+    ["Música do Nirvana em Nevermind com guitarra de efeito chorus e clima hipnótico.",["Come As You Are","Heart-Shaped Box","Lithium","All Apologies"],"Come As You Are"],
+    ["Hino da banda Twisted Sister que ganhou um videoclipe marcante na era da MTV.",["I Love Rock 'n' Roll","We're Not Gonna Take It","Paranoid","Breaking the Law"],"We're Not Gonna Take It"],
+    ["Faixa de estreia do Evanescence conhecida pelo dueto entre Amy Lee e Paul McCoy.",["Bring Me to Life","My Immortal","Going Under","Call Me When You're Sober"],"Bring Me to Life"],
+    ["Balada reflexiva do Audioslave presente no álbum de estreia da banda.",["Like a Stone","Black Hole Sun","Be Yourself","I Am the Highway"],"I Am the Highway"],
+    ["Canção folk de Simon & Garfunkel que ganhou ainda mais notoriedade no filme The Graduate.",["The Sound of Silence","Wish You Were Here","Hurt","Creep"],"The Sound of Silence"]
+];
+
+let musicaAtual = 0;
+let musicaAcertos = 0;
+let musicaRespondida = false;
+
+function renderPerguntaMusica(){
+    const pergunta = perguntasMusicaRockWave[musicaAtual];
+    const progress = document.getElementById("songGuessProgress");
+    const clue = document.getElementById("songGuessClue");
+    const options = document.getElementById("songGuessOptions");
+    const result = document.getElementById("songGuessResult");
+    const next = document.getElementById("songGuessNext");
+    if(!progress || !clue || !options || !result || !next) return;
+
+    musicaRespondida = false;
+    progress.textContent = "PERGUNTA " + (musicaAtual + 1) + " DE " + perguntasMusicaRockWave.length;
+    clue.replaceChildren();
+    const h2 = document.createElement("h2");
+    h2.textContent = "🎤 Pista: " + pergunta[0];
+    clue.appendChild(h2);
+    result.textContent = "";
+    options.replaceChildren();
+    next.style.display = "none";
+
+    pergunta[1].forEach(opcao => {
+        const botao = document.createElement("button");
+        botao.type = "button";
+        botao.textContent = opcao;
+        botao.addEventListener("click", () => responderMusica(opcao));
+        options.appendChild(botao);
+    });
+}
+
+function responderMusica(resposta){
+    if(musicaRespondida) return;
+    musicaRespondida = true;
+
+    const pergunta = perguntasMusicaRockWave[musicaAtual];
+    const options = document.getElementById("songGuessOptions");
+    const result = document.getElementById("songGuessResult");
+    const next = document.getElementById("songGuessNext");
+    if(!result || !next) return;
+
+    document.querySelectorAll("#songGuessOptions button").forEach(botao => {
+        botao.disabled = true;
+        if(botao.textContent === pergunta[2]) botao.style.borderColor = "#168a16";
+        if(botao.textContent === resposta && resposta !== pergunta[2]) botao.style.borderColor = "#a00000";
+    });
+
+    if(resposta === pergunta[2]){
+        musicaAcertos++;
+        result.textContent = "🤘 ACERTOU! " + pergunta[2] + "!";
+        if(typeof desbloquear === "function") desbloquear("achSongGuess");
+    }else{
+        result.textContent = "❌ ERROU! A resposta era: " + pergunta[2];
+    }
+
+    if(musicaAtual < perguntasMusicaRockWave.length - 1){
+        next.textContent = "PRÓXIMA →";
+        next.style.display = "inline-block";
+    }else{
+        next.textContent = "🔄 JOGAR NOVAMENTE";
+        next.style.display = "inline-block";
+    }
+}
+
+function proximaPerguntaMusica(){
+    if(musicaAtual >= perguntasMusicaRockWave.length - 1){
+        musicaAtual = 0;
+        musicaAcertos = 0;
+    }else{
+        musicaAtual++;
+    }
+    renderPerguntaMusica();
+}
+
+function iniciarAdivinheMusica(){
+    const section = document.getElementById("adivinhe");
+    if(!section) return;
+    renderPerguntaMusica();
+}
+
+if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", iniciarAdivinheMusica);
+}else{
+    iniciarAdivinheMusica();
+}
+
+/* =========================
+   COPA ROCKWAVE — MATA-MATA
+========================= */
+(() => {
+    const bandas = [
+        ["Nirvana","Grunge • EUA"],["AC/DC","Hard rock • Austrália"],["Guns N’ Roses","Hard rock • EUA"],
+        ["Black Sabbath","Heavy metal • Reino Unido"],["Linkin Park","Nu metal • EUA"],["System Of A Down","Alternative metal • EUA"],
+        ["Metallica","Thrash metal • EUA"],["Green Day","Punk rock • EUA"],["Pitty","Rock brasileiro • Brasil"],
+        ["Charlie Brown Jr.","Rock brasileiro • Brasil"],["The Cure","Gothic rock • Reino Unido"],["Arctic Monkeys","Indie rock • Reino Unido"],
+        ["Slipknot","Metal • EUA"],["Evanescence","Alternative metal • EUA"],["Rage Against the Machine","Rap metal • EUA"],
+        ["Legião Urbana","Rock brasileiro • Brasil"],["Deep Purple","Hard rock • Reino Unido"],["Kiss","Hard rock • EUA"],
+        ["Foo Fighters","Alternative rock • EUA"],["Pearl Jam","Grunge • EUA"],["Radiohead","Alternative rock • Reino Unido"],
+        ["The Rolling Stones","Rock clássico • Reino Unido"],["Led Zeppelin","Hard rock • Reino Unido"],["Iron Maiden","Heavy metal • Reino Unido"],
+        ["Judas Priest","Heavy metal • Reino Unido"],["Sepultura","Thrash metal • Brasil"],["Raimundos","Punk rock • Brasil"],
+        ["Os Paralamas do Sucesso","Rock brasileiro • Brasil"],["Mamonas Assassinas","Rock brasileiro • Brasil"],
+        ["Muse","Alternative rock • Reino Unido"],["The Offspring","Punk rock • EUA"],["The Strokes","Indie rock • EUA"]
+    ];
+
+    const nomesFases = ["DEZESSEIS AVOS DE FINAL","OITAVAS DE FINAL","QUARTAS DE FINAL","SEMIFINAL","FINAL"];
+    let jogadores = [];
+    let classificados = [];
+    let fase = 0;
+    let indice = 0;
+    let confronto = [];
+    let chave = [];
+    let campeonatoEncerrado = false;
+
+    function embaralhar(lista){
+        const arr=[...lista];
+        for(let i=arr.length-1;i>0;i--){
+            const j=Math.floor(Math.random()*(i+1));
+            [arr[i],arr[j]]=[arr[j],arr[i]];
+        }
+        return arr;
+    }
+
+    function salvar(){
+        try{
+            localStorage.setItem("rw_copa_rockwave_2026_v2",JSON.stringify({
+                jogadores,classificados,fase,indice,confronto,chave,campeonatoEncerrado
+            }));
+        }catch(e){}
+    }
+
+    function carregar(){
+        try{
+            const salvo=JSON.parse(localStorage.getItem("rw_copa_rockwave_2026_v2")||"null");
+            if(!salvo || !Array.isArray(salvo.jogadores)) return false;
+            jogadores=salvo.jogadores;
+            classificados=Array.isArray(salvo.classificados)?salvo.classificados:[];
+            fase=Number(salvo.fase)||0;
+            indice=Number(salvo.indice)||0;
+            confronto=Array.isArray(salvo.confronto)?salvo.confronto:[];
+            chave=Array.isArray(salvo.chave)?salvo.chave:[];
+            campeonatoEncerrado=!!salvo.campeonatoEncerrado;
+            return true;
+        }catch(e){ return false; }
+    }
+
+    function novaPartida(){
+        if(campeonatoEncerrado) return;
+
+        while(jogadores.length<2){
+            if(jogadores.length===1) classificados.push(jogadores.pop());
+            jogadores=classificados;
+            classificados=[];
+            fase++;
+            if(jogadores.length===1){
+                campeonatoEncerrado=true;
+                confronto=[];
+                render();
+                salvar();
+                return;
+            }
+        }
+
+        if(jogadores.length%2!==0) classificados.push(jogadores.pop());
+        confronto=[jogadores[indice],jogadores[indice+1]];
+        render();
+    }
+
+    function iniciarCampeonato(){
+        jogadores=embaralhar(bandas);
+        classificados=[];
+        fase=0;
+        indice=0;
+        confronto=[];
+        chave=[];
+        campeonatoEncerrado=false;
+
+        nomesFases.forEach(nome=>chave.push({nome,pares:[]}));
+
+        novaPartida();
+        salvar();
+    }
+
+    function render(){
+        const left=document.getElementById("battleLeft");
+        const right=document.getElementById("battleRight");
+        const result=document.getElementById("battleResult");
+        const tag=document.getElementById("battleRoundTag");
+        const title=document.getElementById("battleRoundTitle");
+        const info=document.getElementById("battleMatchInfo");
+
+        if(campeonatoEncerrado){
+            left.disabled=true;
+            right.disabled=true;
+            tag.textContent="🏆 CAMPEONATO ENCERRADO";
+            title.textContent=jogadores[0]?.[0]||"Campeã do RockWave";
+            info.textContent="A campeã venceu todos os confrontos da edição de 2026.";
+            result.textContent="🏆 "+(jogadores[0]?.[0]||"CAMPEÃ")+" É A CAMPEÃ DA COPA ROCKWAVE 2026!";
+            renderChave();
+            return;
+        }
+
+        const nomeFase=nomesFases[fase]||"FASE";
+        tag.textContent=nomeFase;
+        title.textContent=(confronto[0]?.[0]||"—")+"  VS  "+(confronto[1]?.[0]||"—");
+        info.textContent="Confronto "+(Math.floor(indice/2)+1)+" • Escolha quem avança.";
+        left.disabled=false;
+        right.disabled=false;
+
+        left.querySelector("h2").textContent=confronto[0]?.[0]||"—";
+        left.querySelector("p").textContent=confronto[0]?.[1]||"—";
+        right.querySelector("h2").textContent=confronto[1]?.[0]||"—";
+        right.querySelector("p").textContent=confronto[1]?.[1]||"—";
+        result.textContent="Quem perder está eliminado desta edição. Quem ganhar segue para a próxima rodada.";
+        renderChave();
+    }
+
+    function registrarConfronto(vencedora,perdedora){
+        if(!chave[fase]) chave[fase]={nome:nomesFases[fase],pares:[]};
+        chave[fase].pares.push({a:confronto[0]?.[0],b:confronto[1]?.[0],vencedora:vencedora[0],perdedora:perdedora[0]});
+    }
+
+    function votar(lado){
+        if(campeonatoEncerrado || !confronto[0] || !confronto[1]) return;
+
+        const vencedora=confronto[lado];
+        const perdedora=confronto[lado===0?1:0];
+        registrarConfronto(vencedora,perdedora);
+
+        const result=document.getElementById("battleResult");
+        if(result) result.textContent="🤘 "+vencedora[0]+" venceu! "+perdedora[0]+" está eliminada.";
+
+        jogadores.splice(indice,2);
+        classificados.push(vencedora);
+        indice=0;
+
+        setTimeout(()=>{
+            novaPartida();
+            salvar();
+        },500);
+    }
+
+    function renderChave(){
+        const box=document.getElementById("battleBracket");
+        if(!box) return;
+        box.replaceChildren();
+
+        chave.forEach((round,index)=>{
+            const col=document.createElement("div");
+            col.className="battle-round";
+            const h=document.createElement("h3");
+            h.textContent=round.nome;
+            col.appendChild(h);
+
+            if(!round.pares.length){
+                const empty=document.createElement("div");
+                empty.className="battle-match";
+                empty.textContent=index===fase?"EM ANDAMENTO":"—";
+                col.appendChild(empty);
+            }else{
+                round.pares.forEach(match=>{
+                    const el=document.createElement("div");
+                    el.className="battle-match winner";
+                    el.replaceChildren();
+                    const winner = document.createElement("strong");
+                    winner.textContent = match.vencedora;
+                    const advanced = document.createElement("small");
+                    advanced.textContent = "✓ avançou";
+                    const loser = document.createElement("small");
+                    loser.className = "battle-loser";
+                    loser.textContent = "✕ " + match.perdedora + " eliminado";
+                    el.append(winner, advanced, loser);
+                    col.appendChild(el);
+                });
+            }
+            box.appendChild(col);
+        });
+    }
+
+    function iniciar(){
+        const section=document.getElementById("batalha");
+        const left=document.getElementById("battleLeft");
+        const right=document.getElementById("battleRight");
+        const novo=document.getElementById("battleNew");
+        if(!section||!left||!right) return;
+
+        left.addEventListener("click",()=>votar(0));
+        right.addEventListener("click",()=>votar(1));
+        if(novo) novo.addEventListener("click",iniciarCampeonato);
+
+        if(!carregar() || !jogadores.length){
+            iniciarCampeonato();
+        }else{
+            render();
+        }
+    }
+
+    if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",iniciar);
+    else iniciar();
+})();
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>(()=>{const SUPABASE_URL="https://ofuvubylggymlmhwjeji.supabase.co",SUPABASE_PUBLISHABLE_KEY="sb_publishable_xdzOiZ3w0z4JEt9jIa98lQ_yS7If7kI",sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}),authBox=document.getElementById("rw-auth"),form=document.getElementById("rw-auth-form"),email=document.getElementById("rw-email"),password=document.getElementById("rw-password"),submit=document.getElementById("rw-auth-submit"),message=document.getElementById("rw-auth-message"),loginTab=document.getElementById("rw-tab-login"),signupTab=document.getElementById("rw-tab-signup"),forgot=document.getElementById("rw-auth-forgot"),account=document.getElementById("rw-account"),accountEmail=document.getElementById("rw-account-email"),logout=document.getElementById("rw-logout");let mode="login";document.body.classList.add("rw-locked");function msg(t,c=""){message.textContent=t;message.className=c}function setMode(m){mode=m;const s=m==="signup";loginTab.classList.toggle("active",!s);signupTab.classList.toggle("active",s);submit.textContent=s?"CRIAR MINHA CONTA":"ENTRAR NO ROCKWAVE";password.autocomplete=s?"new-password":"current-password";msg("")}function unlock(u){document.body.classList.remove("rw-locked");authBox.classList.add("rw-hidden");account.style.display="flex";accountEmail.textContent=u?.email||"Conta RockWave"}function lock(){document.body.classList.add("rw-locked");authBox.classList.remove("rw-hidden");account.style.display="none"}loginTab.addEventListener("click",()=>setMode("login"));signupTab.addEventListener("click",()=>setMode("signup"));form.addEventListener("submit",async e=>{e.preventDefault();const em=email.value.trim(),pw=password.value;submit.disabled=true;msg("Conectando ao RockWave...");try{if(mode==="signup"){const{data,error}=await sb.auth.signUp({email:em,password:pw,options:{emailRedirectTo:"https://rockwave.rockbr.workers.dev/"}});if(error)throw error;if(data.session)unlock(data.user);else msg("📧 Confirme seu e-mail antes de entrar. Verifique sua caixa de entrada (Gmail, Outlook, etc.) e clique no link de confirmação enviado pelo RockWave.","success")}else{const{data,error}=await sb.auth.signInWithPassword({email:em,password:pw});if(error)throw error;unlock(data.user)}}catch(err){msg(err?.message||"Não foi possível concluir o acesso.","error")}finally{submit.disabled=false}});forgot.addEventListener("click",async()=>{const em=email.value.trim();if(!em){msg("Digite seu e-mail primeiro para receber o link de recuperação.","error");email.focus();return}forgot.disabled=true;const{error}=await sb.auth.resetPasswordForEmail(em,{redirectTo:"https://rockwave.rockbr.workers.dev/"});forgot.disabled=false;msg(error?(error.message||"Erro ao enviar recuperação."):"Se esse e-mail existir, enviamos um link para redefinir sua senha.",error?"error":"success")});logout.addEventListener("click",async()=>{await sb.auth.signOut();lock()});sb.auth.onAuthStateChange((_e,s)=>{if(s?.user)unlock(s.user);else lock()});sb.auth.getSession().then(({data})=>{if(data.session?.user)unlock(data.session.user);else lock()})})();</script>
+<script>
+(() => {
+    const perguntasQuizBandas = [
+        ["Qual banda lançou o álbum Nevermind?", ["Nirvana", "Pearl Jam", "Soundgarden", "Alice in Chains"], "Nirvana"],
+        ["Qual banda gravou Bohemian Rhapsody?", ["The Who", "Queen", "The Beatles", "The Rolling Stones"], "Queen"],
+        ["Quem lançou o riff de Seven Nation Army?", ["The Strokes", "The White Stripes", "The Hives", "The Black Keys"], "The White Stripes"],
+        ["Qual banda lançou o álbum Never Mind the Bollocks?", ["The Clash", "Ramones", "Sex Pistols", "The Damned"], "Sex Pistols"],
+        ["Quem lançou Hybrid Theory em 2000?", ["Deftones", "Linkin Park", "Korn", "System Of A Down"], "Linkin Park"],
+        ["Qual banda lançou Back in Black?", ["AC/DC", "Kiss", "Aerosmith", "Deep Purple"], "AC/DC"],
+        ["Qual grupo lançou Sgt. Pepper's Lonely Hearts Club Band?", ["The Kinks", "The Beatles", "The Who", "The Beach Boys"], "The Beatles"],
+        ["Qual banda lançou seu álbum de estreia homônimo em 1970?", ["Deep Purple", "Black Sabbath", "Led Zeppelin", "Judas Priest"], "Black Sabbath"],
+        ["Qual banda lançou seu álbum de estreia em 1995 com Dave Grohl nos vocais?", ["Foo Fighters", "Nirvana", "Green Day", "Weezer"], "Foo Fighters"],
+        ["Qual banda brasileira lançou o álbum Dois em 1986?", ["Titãs", "Legião Urbana", "Barão Vermelho", "Os Paralamas do Sucesso"], "Legião Urbana"]
+    ];
+    let perguntaAtual = 0;
+    let acertosQuizBandas = 0;
+    let quizRespondido = false;
+
+    function renderPerguntaBanda() {
+        const progresso = document.getElementById("bandQuizProgress");
+        const pergunta = document.getElementById("bandQuizQuestion");
+        const opcoes = document.getElementById("bandQuizOptions");
+        const resultado = document.getElementById("bandQuizResult");
+        const proxima = document.getElementById("bandQuizNext");
+        if (!progresso || !pergunta || !opcoes || !resultado || !proxima) return;
+
+        const [texto, alternativas] = perguntasQuizBandas[perguntaAtual];
+        quizRespondido = false;
+        progresso.textContent = `PERGUNTA ${perguntaAtual + 1} DE ${perguntasQuizBandas.length}`;
+        pergunta.replaceChildren();
+        const titulo = document.createElement("h2");
+        titulo.textContent = texto;
+        pergunta.appendChild(titulo);
+        opcoes.replaceChildren();
+        resultado.textContent = "";
+        proxima.style.display = "none";
+
+        alternativas.forEach(alternativa => {
+            const botao = document.createElement("button");
+            botao.type = "button";
+            botao.textContent = alternativa;
+            botao.addEventListener("click", () => responderQuizBanda(alternativa));
+            opcoes.appendChild(botao);
+        });
+    }
+
+    function responderQuizBanda(resposta) {
+        if (quizRespondido) return;
+        quizRespondido = true;
+        const correta = perguntasQuizBandas[perguntaAtual][2];
+        document.querySelectorAll("#bandQuizOptions button").forEach(botao => {
+            botao.disabled = true;
+            if (botao.textContent === correta) botao.style.borderColor = "#168a16";
+            if (botao.textContent === resposta && resposta !== correta) botao.style.borderColor = "#a00000";
+        });
+
+        const resultado = document.getElementById("bandQuizResult");
+        const proxima = document.getElementById("bandQuizNext");
+        if (resposta === correta) {
+            acertosQuizBandas++;
+            resultado.textContent = "🤘 Resposta certa!";
+            if (typeof desbloquear === "function") desbloquear("achBandQuiz");
+        } else {
+            resultado.textContent = `Resposta correta: ${correta}.`;
+        }
+        proxima.textContent = perguntaAtual === perguntasQuizBandas.length - 1 ? "JOGAR NOVAMENTE" : "PRÓXIMA →";
+        proxima.style.display = "inline-block";
+    }
+
+    window.proximaPerguntaBanda = () => {
+        if (!quizRespondido) return;
+        if (perguntaAtual === perguntasQuizBandas.length - 1) {
+            perguntaAtual = 0;
+            acertosQuizBandas = 0;
+        } else {
+            perguntaAtual++;
+        }
+        renderPerguntaBanda();
+    };
+
+    window.alternarNoiteExtrema = () => {
+        const ativada = document.body.classList.toggle("extreme-night");
+        const botao = document.getElementById("extremeNightButton");
+        if (botao) {
+            botao.setAttribute("aria-pressed", String(ativada));
+            botao.innerHTML = ativada ? "🌑 SAIR DA NOITE EXTREMA" : "🌑 NOITE EXTREMA";
+        }
+        if (ativada && typeof desbloquear === "function") desbloquear("achNight");
+    };
+
+    window.alternarModoShow = () => {
+        const ativado = document.body.classList.toggle("show-mode");
+        const botao = document.getElementById("showModeButton");
+        if (botao) {
+            botao.setAttribute("aria-pressed", String(ativado));
+            botao.textContent = ativado ? "🎸 SAIR DO MODO SHOW" : "🎸 MODO SHOW";
+        }
+        if (ativado && typeof desbloquear === "function") desbloquear("achShow");
+    };
+
+    const decadasRockWave = {
+        "1950": { titulo: "O nascimento do rock", texto: "O rock and roll saiu das rádios e ganhou guitarras elétricas, atitude e um público jovem.", itens: [["Artistas", "Chuck Berry, Little Richard e Elvis Presley"], ["Sons marcantes", "Rockabilly, rhythm and blues e doo-wop"], ["Faixas em destaque", "Maybellene • Tutti Frutti • Jailhouse Rock"]] },
+        "1960": { titulo: "Invasão e psicodelia", texto: "A década transformou o rock em fenômeno global e abriu espaço para experimentação de estúdio.", itens: [["Artistas", "The Beatles, The Rolling Stones e Jimi Hendrix"], ["Sons marcantes", "British Invasion, folk rock e psicodelia"], ["Faixas em destaque", "Hey Jude • Satisfaction • Purple Haze"]] },
+        "1970": { titulo: "Riffs e novos extremos", texto: "O hard rock e o heavy metal cresceram, enquanto o punk e o rock progressivo seguiram caminhos opostos.", itens: [["Artistas", "Led Zeppelin, Black Sabbath, Queen e Ramones"], ["Sons marcantes", "Hard rock, metal, punk e progressivo"], ["Faixas em destaque", "Stairway to Heaven • Paranoid • Bohemian Rhapsody"]] },
+        "1980": { titulo: "A era dos grandes palcos", texto: "Videoclipes e arenas ampliaram o alcance do rock, ao mesmo tempo que cenas independentes floresciam.", itens: [["Artistas", "AC/DC, Metallica, The Cure e Legião Urbana"], ["Sons marcantes", "Heavy metal, new wave, hardcore e rock brasileiro"], ["Faixas em destaque", "Back in Black • Master of Puppets • Será"]] },
+        "1990": { titulo: "Alternativo no centro", texto: "Grunge e rock alternativo chegaram ao grande público; novas vertentes do metal também ganharam força.", itens: [["Artistas", "Nirvana, Pearl Jam, Radiohead e Rage Against the Machine"], ["Sons marcantes", "Grunge, britpop, pop punk e nu metal"], ["Faixas em destaque", "Smells Like Teen Spirit • Creep • Killing in the Name"]] },
+        "2000": { titulo: "Indie e novas ondas", texto: "A internet mudou a descoberta musical enquanto bandas indie, emo e novas cenas brasileiras alcançavam públicos maiores.", itens: [["Artistas", "The Strokes, Arctic Monkeys, Linkin Park e Pitty"], ["Sons marcantes", "Indie rock, emo, nu metal e garage rock"], ["Faixas em destaque", "Last Nite • Do I Wanna Know? • Equalize"]] },
+        "2010": { titulo: "Rock em novas plataformas", texto: "Streaming e redes sociais mudaram o lançamento de música, sem apagar as cenas locais e a mistura de estilos.", itens: [["Artistas", "Tame Impala, Royal Blood, The 1975 e Greta Van Fleet"], ["Sons marcantes", "Indie, garage, pop rock e revival clássico"], ["Faixas em destaque", "The Less I Know the Better • Figure It Out • Chocolate"]] }
+    };
+
+    window.mostrarDecada = (decada) => {
+        const dados = decadasRockWave[decada];
+        const display = document.getElementById("decadeDisplay");
+        if (!dados || !display) return;
+
+        const kicker = document.createElement("div");
+        kicker.className = "time-kicker";
+        kicker.textContent = `${decada}–${Number(decada) + 9}`;
+        const titulo = document.createElement("h2");
+        titulo.textContent = dados.titulo;
+        const texto = document.createElement("p");
+        texto.textContent = dados.texto;
+        const grade = document.createElement("div");
+        grade.className = "time-grid";
+        dados.itens.forEach(([rotulo, conteudo]) => {
+            const item = document.createElement("div");
+            item.className = "time-item";
+            const strong = document.createElement("strong");
+            strong.textContent = rotulo;
+            const span = document.createElement("span");
+            span.textContent = conteudo;
+            item.append(strong, span);
+            grade.appendChild(item);
+        });
+        display.replaceChildren(kicker, titulo, texto, grade);
+        document.querySelectorAll(".decade-buttons button").forEach(botao => {
+            botao.classList.toggle("selected", botao.getAttribute("onclick") === `mostrarDecada('${decada}')`);
+        });
+        if (typeof desbloquear === "function") desbloquear("achTime");
+    };
+
+    let codigoSecreto = "";
+    let easterEggTimer = null;
+    let easterMusicTimer = null;
+    const easterModal = document.getElementById("easterMessage");
+
+    function mostrarEasterEgg(titulo, mensagem, atrasoMusica = 0, videoId = null, mediaTitle = "RockWave Easter egg") {
+        const tituloModal = document.getElementById("easterTitle");
+        const textoModal = document.getElementById("easterText");
+        const mediaModal = document.getElementById("easterMedia");
+        if (!easterModal || !tituloModal || !textoModal || !mediaModal) return;
+
+        clearTimeout(easterEggTimer);
+        clearTimeout(easterMusicTimer);
+        mediaModal.replaceChildren();
+        mediaModal.classList.toggle("audio-only", titulo === "NEVERMIND.EXE" || titulo === "ROCKWAVE.EXE");
+        tituloModal.textContent = titulo;
+        textoModal.textContent = mensagem;
+        easterModal.classList.add("show");
+        if (typeof desbloquear === "function") desbloquear("achEgg");
+        if (videoId) {
+            const video = document.createElement("iframe");
+            video.title = mediaTitle;
+            video.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1&playsinline=1`;
+            video.allow = "autoplay; encrypted-media; picture-in-picture";
+            video.referrerPolicy = "strict-origin-when-cross-origin";
+            video.allowFullscreen = true;
+            if (titulo === "NEVERMIND.EXE" || titulo === "ROCKWAVE.EXE") {
+                video.setAttribute("aria-hidden", "true");
+                video.tabIndex = -1;
+            }
+            mediaModal.appendChild(video);
+        } else if (typeof window.ligarRadio === "function") {
+            if (atrasoMusica > 0) {
+                easterMusicTimer = setTimeout(() => {
+                    easterMusicTimer = null;
+                    window.ligarRadio();
+                }, atrasoMusica);
+            } else {
+                window.ligarRadio();
+            }
+        }
+        if (!videoId) easterEggTimer = setTimeout(fecharEasterEgg, 10000);
+    }
+
+    function fecharEasterEgg() {
+        const estavaAberto = easterModal?.classList.contains("show");
+        if (easterModal) easterModal.classList.remove("show");
+        const mediaModal = document.getElementById("easterMedia");
+        mediaModal?.replaceChildren();
+        mediaModal?.classList.remove("audio-only");
+        clearTimeout(easterEggTimer);
+        clearTimeout(easterMusicTimer);
+        easterEggTimer = null;
+        easterMusicTimer = null;
+        if (estavaAberto && typeof window.pausarRadio === "function") window.pausarRadio();
+    }
+
+    function ativarCodigoSecreto(codigo) {
+        codigoSecreto = "";
+        if (codigo === "showtime") {
+            window.alternarModoShow();
+            if (typeof desbloquear === "function") desbloquear("achCodes");
+            return;
+        }
+        if (codigo === "underground") {
+            if (typeof desbloquear === "function") {
+                desbloquear("achCodes");
+                desbloquear("achUnderground");
+            }
+            window.abrir("underground");
+            return;
+        }
+        if (codigo === "videoteca") {
+            if (typeof desbloquear === "function") {
+                desbloquear("achCodes");
+                desbloquear("achEgg");
+            }
+            window.abrir("videoteca");
+            return;
+        }
+
+        if (typeof desbloquear === "function") desbloquear("achCodes");
+        const easterEggs = {
+            nirvana: ["NEVERMIND.EXE", "Você encontrou o sinal de 1991. 🎸", 0, "hTWKbfoikeg", "Nirvana - Smells Like Teen Spirit"],
+            rockwave: ["ROCKWAVE.EXE", "Psychosocial, do Slipknot, no volume máximo. 🤘", 0, "5abamRO41fE", "Slipknot - Psychosocial (Official Video)"],
+            headbang: ["HEADBANG.EXE", "Você encontrou um sinal ainda mais fundo no RockWave. 🤘", 0],
+            feedback: ["FEEDBACK.EXE", "Sinal oculto encontrado. Aumente o volume e siga o ruído. 🎚️", 0]
+        };
+        const [titulo, mensagem, atrasoMusica, videoId, mediaTitle] = easterEggs[codigo] || [];
+        if (titulo) mostrarEasterEgg(titulo, mensagem, atrasoMusica, videoId, mediaTitle);
+    }
+
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape") {
+            fecharEasterEgg();
+            codigoSecreto = "";
+            return;
+        }
+
+        if (event.key.length !== 1 || event.ctrlKey || event.altKey || event.metaKey) return;
+        if (event.target.closest("input, textarea, select, [contenteditable='true']")) return;
+
+        codigoSecreto = (codigoSecreto + event.key.toLowerCase()).slice(-30);
+        const codigos = ["nirvana", "rockwave", "showtime", "underground", "headbang", "feedback", "videoteca"];
+        const encontrado = codigos.find(codigo => codigoSecreto.endsWith(codigo));
+        if (encontrado) ativarCodigoSecreto(encontrado);
+    });
+
+    if (easterModal) {
+        easterModal.addEventListener("click", event => {
+            if (event.target === easterModal) fecharEasterEgg();
+        });
+    }
+
+    renderPerguntaBanda();
+})();
+</script>
+</body>
+</html>
